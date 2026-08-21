@@ -49,6 +49,17 @@ def author_rover():
         set_xform(c.GetPrim(), (wx, wy, ROVER_WHEEL_R))
         add_semantics(c.GetPrim(), "rover_wheel")
 
+    # Scanner arm: vertical post + horizontal boom + scanner head
+    arm = UsdGeom.Xform.Define(stage, "/rover/scanner_arm")
+    set_xform(arm.GetPrim())
+    arm_render = merge_meshes(stage, "/rover/scanner_arm/render", [
+        (0.04, 0.04, 0.40, (0.10, 0.0, cz + ROVER_BODY_H / 2 + 0.20)),
+        (0.25, 0.04, 0.04, (0.22, 0.0, cz + ROVER_BODY_H / 2 + 0.38)),
+        (0.08, 0.06, 0.06, (0.30, 0.0, cz + ROVER_BODY_H / 2 + 0.38)),
+    ])
+    set_xform(arm_render.GetPrim())
+    add_semantics(arm_render.GetPrim(), "rover_sensor")
+
     UsdGeom.Scope.Define(stage, "/rover/Sensors")
 
     lm = UsdGeom.Xform.Define(stage, "/rover/Sensors/lidar_mount")
