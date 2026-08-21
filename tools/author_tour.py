@@ -22,7 +22,7 @@ from wh_common import *
 
 A1, A2, A3 = AISLE_Y[0], AISLE_Y[1], AISLE_Y[2]
 WALK_N, WALK_S = 11.1, -11.1
-X_EAST, X_WEST, X_CROSS = 25.8, -27.35, 0.0
+X_EAST, X_WEST, X_CROSS = 23.0, -23.0, 0.0
 PICK_X, PICK_Y = PICK_STATION
 DROP_X, DROP_Y = DROP_STATION
 
@@ -43,8 +43,8 @@ PATHS = [
                        (X_CROSS, A1), (X_CROSS, A2)]),
     ("patrol_centre", [(X_EAST, A2), (X_CROSS, A2)]),
     ("patrol_north",  [(X_CROSS, A3), (X_WEST, A3),
-                       (X_EAST, A3), (X_WEST, A3)]),
-    ("pickup_run",    [(X_WEST, A2), (PICK_X, A2), "PICK"]),
+                       (X_EAST, A3), (X_CROSS, A3)]),
+    ("pickup_run",    [(X_CROSS, A2), (X_WEST, A2), (PICK_X, A2), "PICK"]),
     ("transport",     [(X_CROSS, A2), (X_CROSS, A1), (DROP_X, A1), "PLACE"]),
 ]
 START = (-8.0, A2)

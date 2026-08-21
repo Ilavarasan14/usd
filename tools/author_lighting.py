@@ -167,6 +167,14 @@ def author_artificial():
             x = -27.0 + 54.0 * k / 13.0
             fixture(f"/World/Lighting/HighBay/aisle_{i}_{k:02d}", x, ay, 0.0)
 
+    # Lower task lights keep barcode faces readable from the rover cameras and
+    # remain visible in Hydra previews that sample only a subset of high bays.
+    for i, ay in enumerate(AISLE_Y):
+        for k in range(8):
+            x = -21.0 + 42.0 * k / 7.0
+            fixture(f"/World/Lighting/Task/aisle_{i}_{k:02d}", x, ay, 0.0,
+                    w=0.8, h=0.2, inten=700.0)
+
     # Cross-aisle, running the full bay depth.
     for k in range(6):
         y = -10.0 + 20.0 * k / 5.0

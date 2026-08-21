@@ -108,22 +108,22 @@ def author_tote():
             "front": (0.0, -1.0), "back": (0.0, 1.0),
             "left": (-1.0, 0.0), "right": (1.0, 0.0)}.items():
         horizontal = abs(normal_y) > 0
-        backing_size = (0.30, 0.006, 0.16) if horizontal else (0.006, 0.30, 0.16)
+        backing_size = (0.36, 0.006, 0.20) if horizontal else (0.006, 0.36, 0.20)
         backing_center = (0.0, normal_y * (TOTE_W / 2 + 0.003), 0.18) \
             if horizontal else (normal_x * (TOTE_L / 2 + 0.003), 0.0, 0.18)
         barcode = define_box_mesh(stage, f"/tote/barcode/{side}_backing",
                                   *backing_size, center=backing_center)
         set_xform(barcode.GetPrim())
         barcode.GetPrim().CreateAttribute("barcode:value", Sdf.ValueTypeNames.String,
-                                          custom=True).Set("WH-TOTE-0001")
+                          custom=True).Set("WH-TOTE-0001")
         for index, width in enumerate(barcode_widths):
             offset = -0.135 + sum(barcode_widths[:index])
             if horizontal:
                 center = (offset + width / 2, normal_y * (TOTE_W / 2 + 0.010), 0.18)
-                size = (width, 0.008, 0.12)
+                size = (width, 0.008, 0.16)
             else:
                 center = (normal_x * (TOTE_L / 2 + 0.010), offset + width / 2, 0.18)
-                size = (0.008, width, 0.12)
+                size = (0.008, width, 0.16)
             bar = define_box_mesh(stage, f"/tote/barcode/{side}_bar_{index:02d}",
                                   *size, center=center)
             set_xform(bar.GetPrim())

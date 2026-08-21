@@ -1432,6 +1432,321 @@ def Xform "World"
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
         }
+
+        def "Task"
+        {
+            def RectLight "aisle_0_00"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-21, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_01"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-15, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_02"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-9, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_03"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-3, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_04"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (3, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_05"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (9, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_06"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (15, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_0_07"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (21, -5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_00"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-21, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_01"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-15, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_02"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-9, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_03"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-3, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_04"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (3, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_05"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (9, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_06"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (15, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_1_07"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (21, 0, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_00"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-21, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_01"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-15, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_02"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-9, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_03"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-3, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_04"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (3, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_05"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (9, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_06"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (15, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def RectLight "aisle_2_07"
+            {
+                color3f inputs:color = (1, 0.97, 0.94)
+                float inputs:exposure = 0
+                float inputs:height = 0.2
+                float inputs:intensity = 700
+                bool inputs:normalize = 1
+                float inputs:width = 0.8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (21, 5.9, 9.6)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
     }
 }
 
