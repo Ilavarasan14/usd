@@ -80,7 +80,7 @@ def Xform "World" (
             {
                 float physics:mass = 25
                 quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:translate = (-28.2, -8.5, 0.01643695703029506)
+                double3 xformOp:translate = (-28.6, -8.5, 0.0166406303659422)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -94,7 +94,7 @@ def Xform "World" (
             {
                 float physics:mass = 25
                 quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:translate = (-28.2, -7.2, 0.020677138547121023)
+                double3 xformOp:translate = (-28.6, -7.2, 0.021313780992711927)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -108,7 +108,7 @@ def Xform "World" (
             {
                 float physics:mass = 25
                 quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:translate = (-28.2, -5.9, 0.026398346252533064)
+                double3 xformOp:translate = (-28.6, -5.9, 0.02718420112785204)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -122,7 +122,7 @@ def Xform "World" (
             {
                 float physics:mass = 25
                 quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:translate = (-28.2, 5.9, 0.08539834625253306)
+                double3 xformOp:translate = (-28.6, 5.9, 0.08618420112785204)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -136,7 +136,7 @@ def Xform "World" (
             {
                 float physics:mass = 25
                 quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:translate = (-28.2, 7.2, 0.09267713854712102)
+                double3 xformOp:translate = (-28.6, 7.2, 0.09331378099271193)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -150,7 +150,7 @@ def Xform "World" (
             {
                 float physics:mass = 25
                 quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:translate = (-28.2, 8.5, 0.10143695703029507)
+                double3 xformOp:translate = (-28.6, 8.5, 0.1016406303659422)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -161,7 +161,7 @@ def Xform "World" (
             {
                 float physics:mass = 8
                 quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865475)
-                double3 xformOp:translate = (-28.45, -8.5, 0.16056110940652893)
+                double3 xformOp:translate = (-28.85, -8.5, 0.16078054097554295)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -172,7 +172,7 @@ def Xform "World" (
             {
                 float physics:mass = 8
                 quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865475)
-                double3 xformOp:translate = (-27.95, -8.5, 0.1603244515752933)
+                double3 xformOp:translate = (-28.35, -8.5, 0.16051013518988683)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -183,7 +183,7 @@ def Xform "World" (
             {
                 float physics:mass = 8
                 quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865475)
-                double3 xformOp:translate = (-28.45, 5.9, 0.22987737680327175)
+                double3 xformOp:translate = (-28.85, 5.9, 0.23072403337596767)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
 
@@ -194,7 +194,7 @@ def Xform "World" (
             {
                 float physics:mass = 8
                 quatd xformOp:orient = (0.7071067811865476, 0, 0, 0.7071067811865475)
-                double3 xformOp:translate = (-27.95, 5.9, 0.2289642542785778)
+                double3 xformOp:translate = (-28.35, 5.9, 0.22968069746605516)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
         }

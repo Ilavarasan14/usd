@@ -14,7 +14,7 @@ FLEET = [
 # Inspection rover. Centre aisle, outbound, 10 m clear of amr_tote_01.
 ROVERS = [("rover_01", -8.0, AISLE_Y[1], 0.0)]
 STAGED_PALLET_Y = [-8.5, -7.2, -5.9, 5.9, 7.2, 8.5]
-STAGED_PALLET_X = -28.2
+STAGED_PALLET_X = -28.6      # tucked toward the wall to open the west lane
 EMPTY_PALLET_MASS = 25.0
 
 
@@ -135,22 +135,6 @@ def author_routes():
     return dict(route_segments=n_seg, route_points=len(pts), waypoints=len(named))
 
 
-def author_timeline():
-    stage = new_layer("scenario/timeline.usda",
-                      "Mission schedule metadata. No animation is authored: the "
-                      "AMRs are driven by joint drives from the controller, and "
-                      "time-sampled joint targets would fight it.")
-    UsdGeom.Xform.Define(stage, "/World")
-    UsdGeom.Scope.Define(stage, "/World/Scenario")
-    tl = UsdGeom.Scope.Define(stage, "/World/Scenario/Timeline").GetPrim()
-    tl.CreateAttribute("mission:durationSeconds", Sdf.ValueTypeNames.Double,
-                       custom=True).Set(30.0)
-    tl.CreateAttribute("mission:tasks", Sdf.ValueTypeNames.StringArray,
-                       custom=True).Set([
-        "amr_tote_01: pick_drop_west -> dock_east_c",
-        "amr_tote_02: dock_east_a -> pick_drop_west",
-        "amr_tote_03: charge_02 -> dock_east_d",
-        "amr_tote_04: cross-aisle transit, north to south",
-    ])
-    stage.GetRootLayer().Save()
-    return dict(tasks=4, duration_s=30.0)
+# NOTE: timeline authoring moved to tools/author_tour.py, which emits the
+# rover patrol as time samples. The previous static-metadata version lived here
+# and was removed so the orchestrator cannot wire it back in by mistake.

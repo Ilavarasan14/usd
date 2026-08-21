@@ -2,7 +2,9 @@
 (
     doc = """Warehouse bay for AMR navigation. Isaac Sim 6.0.1 / Kit 110.1.2.
              Composition only -- this layer defines no prims.
-             Bay extent 60 x 24 m, clear height 10.5 m. Z-up, meters, kilograms."""
+             Bay extent 60 x 24 m, clear height 10.5 m. Z-up, meters, kilograms.
+             Time range covers rover_01's 360.6 m patrol tour (360.6 s @ 60 fps),
+             authored as kinematic time samples in scenario/timeline.usda."""
 
     defaultPrim = "World"
     metersPerUnit = 1.0
@@ -10,7 +12,7 @@
     upAxis = "Z"
     timeCodesPerSecond = 60
     startTimeCode = 0
-    endTimeCode = 1800
+    endTimeCode = 21636
 
     subLayers = [
         @./safety/overrides.usda@,                  # STRONGEST -- corrections win over everything

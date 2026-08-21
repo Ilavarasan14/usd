@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import wh_common
 import author_env, author_assets, author_rover, author_infra, author_scenario
+import author_tour
 import author_sim, author_lighting
 
 STEPS = [
@@ -27,7 +28,7 @@ STEPS = [
     ("environment/infrastructure.usdc",   author_infra.author_infrastructure),
     ("scenario/placements.usda",          author_scenario.author_placements),
     ("scenario/routes.usda",              author_scenario.author_routes),
-    ("scenario/timeline.usda",            author_scenario.author_timeline),
+    ("scenario/timeline.usda",            author_tour.author_timeline),
     ("simulation/physics.usda",           author_sim.author_physics),
     ("simulation/materials.usda",         author_sim.author_materials),
     ("simulation/sensors.usda",           author_sim.author_sensors),

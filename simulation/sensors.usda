@@ -163,13 +163,26 @@ def Xform "World"
                     def Camera "chase"
                     {
                         float2 clippingRange = (0.1, 80)
-                        float focalLength = 35
+                        float focalLength = 24
                         float horizontalAperture = 36
-                        custom string isaac:note = "Chase view. Parented to the rover root, so it FOLLOWS the robot as it drives. Rear-left 3/4, 3.2 m back."
+                        custom string isaac:note = "Chase view. Parented to the rover root, so it FOLLOWS the robot. Rear-left 3/4 on a 1.25 m boom -- short enough to stay clear of racking while the rover turns in place."
                         token projection = "perspective"
                         float verticalAperture = 20.25
-                        quatd xformOp:orient = (0.7142725729900951, 0.501859944911204, -0.28043692529577435, -0.3991320810189089)
-                        double3 xformOp:translate = (-2.4, -1.6, 1.8)
+                        quatd xformOp:orient = (0.7100888911353935, 0.3421134010884018, -0.2671140718845947, -0.5544206526483884)
+                        double3 xformOp:translate = (-1.2, -0.35, 1.85)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                    }
+
+                    def Camera "chase_top"
+                    {
+                        float2 clippingRange = (0.5, 40)
+                        float focalLength = 35
+                        float horizontalAperture = 36
+                        custom string isaac:note = "Overhead follow, 6 m above the rover, image-up = robot forward. Zero boom radius, so it never clips racking regardless of heading."
+                        token projection = "perspective"
+                        float verticalAperture = 20.25
+                        quatd xformOp:orient = (-0.7071067811865475, 0, 0, 0.7071067811865476)
+                        double3 xformOp:translate = (0, 0, 6)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
                     }
                 }

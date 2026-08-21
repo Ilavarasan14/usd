@@ -216,7 +216,16 @@ VIEW_CAMS = [
     ("rover_closeup",  (-4.60, -1.25, 1.75), (-8.00, 0.00, 0.62), 50.0),
 ]
 # Chase camera rides the rover root, so it follows the robot as it drives.
-CHASE_EYE, CHASE_TARGET, CHASE_FOCAL = (-2.40, -1.60, 1.80), (0.20, 0.0, 0.70), 35.0
+# Chase boom RADIUS is the binding constraint, not lateral offset. The camera is
+# rigidly parented, so during an in-place 180 deg turn it sweeps a circle of that
+# radius around the rover. The east-end turns happen deep inside a rack segment
+# where the aisle is only 3.2 m wide, so the boom must stay under 1.6 m or the
+# camera swings into the racking mid-turn. sqrt(1.20^2 + 0.35^2) = 1.25 m leaves
+# 0.35 m of margin. A short boom needs a wide lens, hence 24 mm.
+CHASE_EYE, CHASE_TARGET, CHASE_FOCAL = (-1.20, -0.35, 1.85), (0.20, 0.0, 0.70), 24.0
+# Overhead follow: zero boom radius, so it is free everywhere by construction.
+# The clearest way to actually watch a patrol.
+CHASE_TOP_EYE, CHASE_TOP_FOCAL = (0.0, 0.0, 6.0), 35.0
 
 
 def author_sensors():
@@ -303,8 +312,18 @@ def author_sensors():
                   look_at_orient(CHASE_EYE, CHASE_TARGET))
         c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
                                     custom=True).Set(
-            "Chase view. Parented to the rover root, so it FOLLOWS the robot "
-            "as it drives. Rear-left 3/4, 3.2 m back.")
+            "Chase view. Parented to the rover root, so it FOLLOWS the robot. "
+            "Rear-left 3/4 on a 1.25 m boom -- short enough to stay clear of "
+            "racking while the rover turns in place.")
+        n_cam += 1
+        c = camera(f"{base}/ViewCameras/chase_top",
+                   CHASE_TOP_FOCAL, VIEW_HAP, VIEW_VAP, (0.5, 40.0))
+        set_xform(c.GetPrim(), CHASE_TOP_EYE,
+                  look_at_orient(CHASE_TOP_EYE, (0.0, 0.0, 0.0), up=(1, 0, 0)))
+        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                    custom=True).Set(
+            "Overhead follow, 6 m above the rover, image-up = robot forward. "
+            "Zero boom radius, so it never clips racking regardless of heading.")
         n_cam += 1
 
     # fixed ceiling cameras, one per aisle, looking straight down
@@ -325,7 +344,7 @@ def author_sensors():
     ffov = 2 * math.degrees(math.atan(FIXED_HAP / (2 * FIXED_FOCAL)))
     rhfov = 2 * math.degrees(math.atan(ROVER_HAP / (2 * ROVER_FOCAL)))
     rvfov = 2 * math.degrees(math.atan(ROVER_VAP / (2 * ROVER_FOCAL)))
-    return dict(cameras=n_cam, view_cams=len(VIEW_CAMS) + len(ROVERS),
+    return dict(cameras=n_cam, view_cams=len(VIEW_CAMS) + 2 * len(ROVERS),
                 amr_hfov=round(hfov, 1), amr_vfov=round(vfov, 1),
                 rover_pov_hfov=round(rhfov, 1), rover_pov_vfov=round(rvfov, 1),
                 fixed_hfov=round(ffov, 1), rtx_lidar="mount only, not authored",

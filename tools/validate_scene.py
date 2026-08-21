@@ -13,15 +13,46 @@ from pxr import Usd, UsdGeom, UsdPhysics, UsdShade, Gf, Sdf
 from wh_common import (SCENE_ROOT, floor_z, PALLET_H, BAY_X, BAY_Y, CLEAR_H,
                        AMR_DECK_H, PALLET_L, PALLET_W, TOTE_H, RACK_H,
                        applied_schemas, RACK_RUN_Y, RACK_RUN_DEPTH, RACK_SEG_X,
-                       AISLE_Y, AISLE_W)
+                       AISLE_Y, AISLE_W, racking_x_extent)
+
+RACK_X = racking_x_extent()   # real steel + end guards, not the layout allocation
+RACK_BANDS = [(ry - RACK_RUN_DEPTH / 2, ry + RACK_RUN_DEPTH / 2)
+              for ry in RACK_RUN_Y]
+
+
+def rack_clearance(mn, mx):
+    """(collides, clearance_m) for a world AABB against the racking.
+
+    Racking occupies the product set {X segment} x {Y run band}, so this is a
+    true AABB-to-box distance over every such box: per-axis gap, 0 where the
+    ranges overlap, combined as a Euclidean distance. Measuring a single axis
+    is wrong -- a robot on the aisle centreline is 1.27 m from any rack in Y
+    no matter how close it gets to a segment boundary in X.
+
+    Conservative by ~60 mm while the wheels turn: BBoxCache transforms each
+    cylinder's axis-aligned extent, and rotating that box about the wheel axis
+    grows it to r*sqrt(2). The real cylinder does not change shape when spun.
+    """
+    best, hit = 1e9, False
+    for a, b in RACK_X:
+        gx = max(a - mx[0], mn[0] - b, 0.0)
+        for lo, hi in RACK_BANDS:
+            gy = max(lo - mx[1], mn[1] - hi, 0.0)
+            if gx == 0.0 and gy == 0.0:
+                hit = True
+                best = -1.0
+                continue
+            best = min(best, math.hypot(gx, gy))
+    return hit, best
+
+
+GROUND_TOL = 0.005          # m; beyond this a body floats or is buried
+PENETRATION_TOL = 0.005     # m; AABB overlap below this is contact, not intersection
 
 # MDL modules that ship with Kit. Offline they cannot resolve; inside Isaac Sim
 # they always do. Reported as WARN with the reason, never silently suppressed.
 KIT_MDL = ("OmniPBR.mdl", "OmniGlass.mdl", "OmniSurface.mdl",
            "OmniSurfacePresets.mdl", "OmniHair.mdl")
-
-GROUND_TOL = 0.005          # m; beyond this a body floats or is buried
-PENETRATION_TOL = 0.005     # m; AABB overlap smaller than this is contact, not intersection
 
 RESULTS = []
 
@@ -413,7 +444,125 @@ def check_marking_normals(stage):
     return fails
 
 
-# ---------------------------------------------------- 9. navigable clearance
+# --------------------------------------------------------- 9. patrol tour
+def check_tour(stage, bbc):
+    """Sample the AUTHORED animation over its whole time range and prove the
+    rover never drives into racking, never leaves the building, and honours the
+    cross-aisle speed limit. Reads the composed time samples, not the intent
+    that produced them."""
+    from wh_common import RACK_RUN_Y, RACK_RUN_DEPTH, BAY_X, BAY_Y
+    rover = stage.GetPrimAtPath("/World/Scenario/Fleet/rover_01")
+    if not rover:
+        rec("SKIP", "patrol_tour", "no rover_01 on the stage")
+        return 0
+    op = rover.GetAttribute("xformOp:translate")
+    samples = op.GetTimeSamples() if op else []
+    if not samples:
+        rec("SKIP", "patrol_tour", "rover_01 has no animated transform")
+        return 0
+
+    t0, t1 = min(samples), max(samples)
+    step = 30.0                       # 0.5 s at 60 fps
+    fails, worst_gap, worst_at = 0, 1e9, None
+    max_cross_speed, prev = 0.0, None
+    n = 0
+    tc = t0
+    while tc <= t1:
+        bbc.SetTime(Usd.TimeCode(tc))
+        r = bbc.ComputeWorldBound(rover).ComputeAlignedRange()
+        mn, mx = r.GetMin(), r.GetMax()
+        n += 1
+        # --- inside the building?
+        if mn[0] < -BAY_X / 2 or mx[0] > BAY_X / 2 or \
+           mn[1] < -BAY_Y / 2 or mx[1] > BAY_Y / 2:
+            rec("FAIL", "patrol_tour",
+                f"t={tc/60:.1f}s rover leaves the bay footprint "
+                f"(x {mn[0]:.2f}..{mx[0]:.2f}, y {mn[1]:.2f}..{mx[1]:.2f})")
+            fails += 1
+        # --- racking incursion
+        hit, gap = rack_clearance(mn, mx)
+        if hit:
+            rec("FAIL", "patrol_tour",
+                f"t={tc/60:.1f}s rover footprint is inside racking "
+                f"(x {mn[0]:.2f}..{mx[0]:.2f}, y {mn[1]:.2f}..{mx[1]:.2f})")
+            fails += 1
+        elif gap < worst_gap:
+            worst_gap, worst_at = gap, tc / 60.0
+        # --- cross-aisle speed limit (safety/constraints: 0.6 m/s at |x| <= 2.25)
+        cx, cy = (mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2
+        if prev is not None:
+            dt = (tc - prev[0]) / 60.0
+            v = math.hypot(cx - prev[1], cy - prev[2]) / dt if dt > 0 else 0.0
+            if abs(cx) <= 2.25 and abs(prev[1]) <= 2.25:
+                max_cross_speed = max(max_cross_speed, v)
+        prev = (tc, cx, cy)
+        tc += step
+
+    if max_cross_speed > 0.62:
+        rec("FAIL", "patrol_tour",
+            f"cross-aisle speed {max_cross_speed:.2f} m/s exceeds the 0.60 m/s "
+            f"limit in safety/constraints.usda")
+        fails += 1
+    if fails == 0:
+        rec("PASS", "patrol_tour",
+            f"{n} poses sampled over {t1/60:.1f}s: never enters racking, stays "
+            f"in the bay, tightest clearance {worst_gap:.3f} m at t={worst_at:.1f}s; "
+            f"cross-aisle peak {max_cross_speed:.2f} m/s (limit 0.60)")
+    return fails
+
+
+# --------------------------------------------------- 10. view camera framing
+def check_view_cameras(stage, bbc):
+    """A view camera parked inside a rack renders a wall of pallet. Checks that
+    every view camera's eye point sits in free space -- and for the chase
+    camera, which is parented to the rover, over the whole tour."""
+    cams = []
+    vc = stage.GetPrimAtPath("/World/Simulation/ViewCameras")
+    if vc:
+        cams += [(c, False) for c in vc.GetChildren() if c.IsA(UsdGeom.Camera)]
+    for f in stage.GetPrimAtPath("/World/Scenario/Fleet").GetChildren():
+        p = stage.GetPrimAtPath(f.GetPath().AppendChild("ViewCameras"))
+        if p:
+            cams += [(c, True) for c in p.GetChildren() if c.IsA(UsdGeom.Camera)]
+    if not cams:
+        rec("SKIP", "view_cameras", "no view cameras on the stage")
+        return 0
+
+    rover = stage.GetPrimAtPath("/World/Scenario/Fleet/rover_01")
+    op = rover.GetAttribute("xformOp:translate") if rover else None
+    samples = op.GetTimeSamples() if op else []
+    fails, worst = 0, (None, 1e9)
+    for cam, animated in cams:
+        times = [Usd.TimeCode.Default()]
+        if animated and samples:
+            t0, t1 = min(samples), max(samples)
+            t = t0
+            times = []
+            while t <= t1:
+                times.append(Usd.TimeCode(t))
+                t += 60.0                      # 1 s
+        for tc in times:
+            m = UsdGeom.Xformable(cam).ComputeLocalToWorldTransform(tc)
+            e = m.ExtractTranslation()
+            eps = Gf.Vec3d(0.05, 0.05, 0.05)
+            hit, gap = rack_clearance(e - eps, e + eps)
+            if hit:
+                rec("FAIL", "view_cameras",
+                    f"{cam.GetName()} eye is inside racking at "
+                    f"({e[0]:.2f}, {e[1]:.2f})"
+                    + (f" t={tc.GetValue()/60:.1f}s" if animated else ""))
+                fails += 1
+                break
+            if gap < worst[1]:
+                worst = (cam.GetName(), gap)
+    if fails == 0:
+        rec("PASS", "view_cameras",
+            f"{len(cams)} view cameras in free space; tightest eye-to-rack "
+            f"{worst[1]:.3f} m ({worst[0]})")
+    return fails
+
+
+# --------------------------------------------------- 11. navigable clearance
 def check_navigable(stage, assets, bbc):
     """The property that actually matters for an AMR scene: does every robot
     fit in the corridor it was placed in, and with how much margin?
@@ -429,24 +578,12 @@ def check_navigable(stage, assets, bbc):
             continue
         r = bbc.ComputeWorldBound(prim).ComputeAlignedRange()
         mn, mx = r.GetMin(), r.GetMax()
-        in_seg = any(not (mx[0] < sx0 or mn[0] > sx1) for sx0, sx1 in RACK_SEG_X)
-        margin = 1e9
-        for ry in RACK_RUN_Y:
-            lo, hi = ry - RACK_RUN_DEPTH / 2, ry + RACK_RUN_DEPTH / 2
-            if mx[1] > lo and mn[1] < hi:            # y overlaps this run band
-                if in_seg:
-                    rec("FAIL", "navigable",
-                        f"{prim.GetPath().name} footprint enters rack run at "
-                        f"y={ry:+.2f} (robot y {mn[1]:.3f}..{mx[1]:.3f}, "
-                        f"run {lo:.2f}..{hi:.2f})")
-                    fails += 1
-                    margin = -1.0
-                continue
-            margin = min(margin, lo - mx[1] if mn[1] < lo else mn[1] - hi)
-        # cross-aisle occupants are bounded by the segment ends instead
-        if not in_seg:
-            margin = min(min(sx0 - mx[0] for sx0, sx1 in RACK_SEG_X if sx0 > mx[0]) if any(sx0 > mx[0] for sx0, _ in RACK_SEG_X) else 1e9,
-                         min(mn[0] - sx1 for sx0, sx1 in RACK_SEG_X if sx1 < mn[0]) if any(sx1 < mn[0] for _, sx1 in RACK_SEG_X) else 1e9)
+        hit, margin = rack_clearance(mn, mx)
+        if hit:
+            rec("FAIL", "navigable",
+                f"{prim.GetPath().name} footprint enters racking "
+                f"(x {mn[0]:.2f}..{mx[0]:.2f}, y {mn[1]:.2f}..{mx[1]:.2f})")
+            fails += 1
         if margin < worst[1]:
             worst = (prim.GetPath().name, margin)
         if 0 <= margin < 0.20:
@@ -477,6 +614,8 @@ def main():
     check_scale(stage, assets, bbc)
     check_marking_normals(stage)
     check_navigable(stage, assets, bbc)
+    check_tour(stage, bbc)
+    check_view_cameras(stage, bbc)
 
     order = {"FAIL": 0, "WARN": 1, "SKIP": 2, "PASS": 3}
     RESULTS.sort(key=lambda r: order[r[0]])

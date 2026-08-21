@@ -44,6 +44,7 @@ N_LEVELS = 1 + len(BEAM_LEVEL_Z)              # floor + 4 beam levels
 N_BAYS_PER_SEG = 8
 RACK_STEEL_LEN = N_BAYS_PER_SEG * BAY_PITCH + UPRIGHT_W   # 23.30 m
 RACK_END_CLEAR = 0.725                        # each end of the 24.75 m segment
+GUARD_W = 0.12                                # rack-end guard bollard
 PALLET_GAP = 0.10                             # side gap between racked pallets
 RACK_OCCUPANCY = 0.45                         # fraction of positions filled
 
@@ -105,6 +106,21 @@ SEMANTIC_CLASSES = [
     "amr", "amr_wheel", "amr_sensor",
     "rover", "rover_wheel", "rover_sensor",
 ]
+
+
+def racking_x_extent():
+    """ACTUAL X range occupied by rack steel, including the end guards -- which
+    stick out 0.42 m further west than the uprights. RACK_SEG_X is the layout
+    ALLOCATION and is 0.725 m wider still; using it for clearance tests makes
+    them over-conservative and hides where the real margin is."""
+    out = []
+    for (sx0, sx1) in RACK_SEG_X:
+        x0 = sx0 + RACK_END_CLEAR + UPRIGHT_W / 2
+        last = x0 + N_BAYS_PER_SEG * BAY_PITCH
+        g0 = sx0 + RACK_END_CLEAR / 2 - GUARD_W / 2
+        g1 = sx1 - RACK_END_CLEAR / 2 + GUARD_W / 2
+        out.append((min(x0 - UPRIGHT_W / 2, g0), max(last + UPRIGHT_W / 2, g1)))
+    return out
 
 
 # ------------------------------------------------------------------- geometry

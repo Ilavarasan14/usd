@@ -89,12 +89,18 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--width", type=int, default=1280)
     ap.add_argument("--fixture-intensity", type=float, default=90.0)
+    ap.add_argument("--frames", default=None,
+                    help="usdrecord FrameSpec, e.g. '0:21771x2000'. Output path "
+                         "must then contain a frame placeholder like out.#.png")
     a = ap.parse_args()
 
     with tempfile.TemporaryDirectory() as td:
         root = build_preview_root(td, a.fixture_intensity)
         cmd = ["/usr/bin/usdrecord", "--camera", a.camera,
-               "--imageWidth", str(a.width), root, a.out]
+               "--imageWidth", str(a.width)]
+        if a.frames:
+            cmd += ["--frames", a.frames]
+        cmd += [root, a.out]
         p = subprocess.run(cmd, capture_output=True, text=True)
         out = p.stdout + p.stderr
         if "Could not load sublayer" in out or "syntax error" in out:
@@ -107,10 +113,15 @@ def main():
         for line in out.splitlines():
             if "Warning" in line or "Error" in line or "Traceback" in line:
                 print("  " + line.strip())
-    ok = os.path.exists(a.out)
-    print(f"{'wrote' if ok else 'FAILED'} {a.out}"
-          + (f"  ({os.path.getsize(a.out)//1024} KB)" if ok else ""))
-    return 0 if ok else 1
+    import glob
+    hits = sorted(glob.glob(a.out.replace("#", "*"))) if "#" in a.out \
+        else ([a.out] if os.path.exists(a.out) else [])
+    if not hits:
+        print(f"FAILED {a.out}")
+        return 1
+    for h in hits:
+        print(f"wrote {h}  ({os.path.getsize(h)//1024} KB)")
+    return 0
 
 
 if __name__ == "__main__":
