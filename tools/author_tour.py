@@ -40,21 +40,20 @@ DT_STRAIGHT, DT_TURN = 0.5, 0.2
 # Scan interval: every SCAN_SPACING metres the rover pauses and turns to face
 # each rack wall (90 deg left then 90 deg right) so the POV camera captures
 # barcodes on both sides of the aisle.
-SCAN_SPACING = 6.0
-SCAN_DWELL = 2.0              # seconds facing each rack wall
+SCAN_SPACING = 4.0
+SCAN_DWELL = 4.0              # seconds facing each rack wall
 
 def _aisle_sweep(aisle_y, x_start, x_end):
-    """Generate waypoints that drive an aisle with periodic barcode scans."""
+    """Drive an aisle with periodic stops to turn and scan both rack faces."""
     legs = []
     direction = 1 if x_end > x_start else -1
     dist = abs(x_end - x_start)
     n_stops = max(1, int(dist / SCAN_SPACING))
+    step = dist / n_stops
     for i in range(n_stops + 1):
-        x = x_start + direction * SCAN_SPACING * i
-        x = min(x, x_end) if direction > 0 else max(x, x_end)
+        x = x_start + direction * step * i
         legs.append((x, aisle_y))
-        if i < n_stops:
-            legs.append("SCAN")
+        legs.append("SCAN")
     return legs
 
 PATHS = [
