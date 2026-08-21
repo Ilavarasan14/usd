@@ -37,14 +37,63 @@ TRANSFER_SECONDS = 6.0         # roller transfer dwell at a station
 FPS = 60.0
 DT_STRAIGHT, DT_TURN = 0.5, 0.2
 
-# Scan interval: every SCAN_SPACING metres the rover pauses and turns to face
-# each rack wall (90 deg left then 90 deg right) so the POV camera captures
-# barcodes on both sides of the aisle.
 SCAN_SPACING = 4.0
 SCAN_DWELL = 4.0              # seconds facing each rack wall
+SENSE_RANGE = 10.0            # lidar look-ahead distance (metres)
 
-def _aisle_sweep(aisle_y, x_start, x_end):
-    """Drive an aisle with periodic stops to turn and scan both rack faces."""
+
+def _wrap180(a):
+    return (a + 180.0) % 360.0 - 180.0
+
+# Obstacle map: walls and rack ends the rover can "see" ahead.
+_WALL_X_MIN, _WALL_X_MAX = -BAY_X / 2 + 0.5, BAY_X / 2 - 0.5  # inside walls
+_RACK_SEGS = RACK_SEG_X      # [(x_min, x_max), ...]
+_RACK_Y_BANDS = [(ry - 1.35, ry + 1.35) for ry in RACK_RUN_Y]
+
+
+def _blocked_ahead(x, y, hdg_deg, distance=SENSE_RANGE):
+    """True if driving `distance` m in the current heading hits racking or wall."""
+    rad = math.radians(hdg_deg)
+    ex = x + distance * math.cos(rad)
+    ey = y + distance * math.sin(rad)
+    # Wall check
+    if ex <= _WALL_X_MIN or ex >= _WALL_X_MAX:
+        return True
+    if ey <= -BAY_Y / 2 + 0.5 or ey >= BAY_Y / 2 - 0.5:
+        return True
+    # Rack band check: would the path cross into a rack run?
+    for (rx0, rx1) in _RACK_SEGS:
+        for (ry0, ry1) in _RACK_Y_BANDS:
+            # Check intermediate sample points along the path
+            for u in (0.3, 0.5, 0.7, 1.0):
+                px = x + u * distance * math.cos(rad)
+                py = y + u * distance * math.sin(rad)
+                if rx0 <= px <= rx1 and ry0 <= py <= ry1:
+                    return True
+    return False
+
+
+def _choose_turn(x, y, hdg_deg):
+    """When blocked ahead, return the open direction: +90 (left) or -90 (right)."""
+    left = _wrap180(hdg_deg + 90.0)
+    right = _wrap180(hdg_deg - 90.0)
+    left_ok = not _blocked_ahead(x, y, left)
+    right_ok = not _blocked_ahead(x, y, right)
+    if left_ok and not right_ok:
+        return left
+    if right_ok and not left_ok:
+        return right
+    # Both open or both blocked: prefer toward the cross-aisle
+    if abs(x) > 1.0:
+        # Turn toward x=0
+        toward_cross = math.degrees(math.atan2(0, -x))
+        if abs(_wrap180(left - toward_cross)) < abs(_wrap180(right - toward_cross)):
+            return left
+    return right
+
+
+def _reactive_aisle_sweep(aisle_y, x_start, x_end):
+    """Sweep an aisle with scan stops; at each stop sense ahead and turn if blocked."""
     legs = []
     direction = 1 if x_end > x_start else -1
     dist = abs(x_end - x_start)
@@ -54,27 +103,30 @@ def _aisle_sweep(aisle_y, x_start, x_end):
         x = x_start + direction * step * i
         legs.append((x, aisle_y))
         legs.append("SCAN")
+        # At the last stop, sense ahead and turn toward open space
+        if i == n_stops:
+            hdg = 0.0 if direction > 0 else 180.0
+            if _blocked_ahead(x, aisle_y, hdg, SENSE_RANGE):
+                new_hdg = _choose_turn(x, aisle_y, hdg)
+                legs.append(("SENSE_TURN", new_hdg))
     return legs
+
 
 PATHS = [
     ("patrol_south",  [(X_CROSS, A2), (X_CROSS, A1)]
-                      + _aisle_sweep(A1, X_CROSS, X_EAST)
+                      + _reactive_aisle_sweep(A1, X_CROSS, X_EAST)
                       + [(X_CROSS, A1), (X_CROSS, A2)]),
-    ("patrol_centre", _aisle_sweep(A2, X_CROSS, X_EAST)
-                      + _aisle_sweep(A2, X_CROSS, X_WEST)
+    ("patrol_centre", _reactive_aisle_sweep(A2, X_CROSS, X_EAST)
+                      + _reactive_aisle_sweep(A2, X_CROSS, X_WEST)
                       + [(X_CROSS, A2)]),
     ("patrol_north",  [(X_CROSS, A3)]
-                      + _aisle_sweep(A3, X_CROSS, X_EAST)
-                      + _aisle_sweep(A3, X_CROSS, X_WEST)
+                      + _reactive_aisle_sweep(A3, X_CROSS, X_EAST)
+                      + _reactive_aisle_sweep(A3, X_CROSS, X_WEST)
                       + [(X_CROSS, A3), (X_CROSS, A2)]),
     ("pickup_run",    [(X_WEST, A2), (PICK_X, A2), "PICK"]),
     ("transport",     [(X_CROSS, A2), (X_CROSS, A1), (DROP_X, A1), "PLACE"]),
 ]
 START = (-8.0, A2)
-
-
-def _wrap180(a):
-    return (a + 180.0) % 360.0 - 180.0
 
 
 def _profile(length, v_caps, ds, accel):
@@ -186,14 +238,16 @@ def build_schedule():
             elif leg == "PLACE":
                 sch.dwell(TRANSFER_SECONDS, "place")
             elif leg == "SCAN":
-                # Turn 90 deg left (face south rack), dwell, turn 180 deg right
-                # (face north rack), dwell, turn back to original heading.
                 orig = sch.hdg
                 sch.turn_to(_wrap180(orig + 90.0))
                 sch.dwell(SCAN_DWELL, "scan")
                 sch.turn_to(_wrap180(orig - 90.0))
                 sch.dwell(SCAN_DWELL, "scan")
                 sch.turn_to(orig)
+            elif isinstance(leg, tuple) and leg[0] == "SENSE_TURN":
+                # Rover detected obstacle ahead; turn toward open corridor
+                sch.dwell(1.0, "sense")
+                sch.turn_to(leg[1])
             else:
                 sch.drive_to(*leg)
         phases.append((name, t0, sch.t, sch.distance - d0))
