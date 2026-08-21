@@ -169,14 +169,16 @@ class Schedule:
         self.t = 0.0
         self.x, self.y = START
         self.hdg = 0.0
+        self.arm_yaw = 0.0      # scanner arm angle relative to rover body
         self.wl = self.wr = 0.0
-        self.keys = []                      # (t, x, y, hdg, wl, wr)
-        self.events = []                    # (kind, t_start, t_end)
+        self.keys = []          # (t, x, y, hdg, arm_yaw, wl, wr)
+        self.events = []
         self.distance = 0.0
         self._emit()
 
     def _emit(self):
-        self.keys.append((self.t, self.x, self.y, self.hdg, self.wl, self.wr))
+        self.keys.append((self.t, self.x, self.y, self.hdg, self.arm_yaw,
+                          self.wl, self.wr))
 
     def turn_to(self, target):
         d = _wrap180(target - self.hdg)
@@ -310,10 +312,17 @@ def author_timeline():
         wx.SetXformOpOrder([wt, wo])
         wheels[nm] = wo
 
-    for (t, x, y, hdg, wl, wr) in sch.keys:
+    arm = stage.OverridePrim("/World/Scenario/Fleet/rover_01/scanner_arm")
+    ax = UsdGeom.Xformable(arm)
+    ax.ClearXformOpOrder()
+    arm_o = ax.AddOrientOp(UsdGeom.XformOp.PrecisionDouble)
+    ax.SetXformOpOrder([arm_o])
+
+    for (t, x, y, hdg, arm_yaw, wl, wr) in sch.keys:
         tc = t * FPS
         t_op.Set(Gf.Vec3d(x, y, floor_z(x, y)), tc)
         o_op.Set(quat_from_axis_angle((0, 0, 1), hdg), tc)
+        arm_o.Set(quat_from_axis_angle((0, 0, 1), arm_yaw), tc)
         for nm, op in wheels.items():
             op.Set(quat_from_axis_angle(
                 (0, 1, 0), math.degrees(wl if nm.endswith("l") else wr)), tc)
