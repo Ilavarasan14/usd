@@ -139,6 +139,27 @@ def author_rover():
     set_xform(cm.GetPrim(), (0.09, 0.0, 0.0), camera_orient(0.0))
     add_semantics(cm.GetPrim(), "rover_sensor")
 
+    # Front lidar mount for obstacle detection
+    lm = UsdGeom.Xform.Define(stage, "/rover/Sensors/lidar_mount")
+    set_xform(lm.GetPrim(), (0.35, 0.0, 0.30))
+    add_semantics(lm.GetPrim(), "rover_sensor")
+
+    # Barcode scanner mount, angled 15 deg down to read tote labels at ~1 m
+    sm = UsdGeom.Xform.Define(stage, "/rover/Sensors/scanner_mount")
+    set_xform(sm.GetPrim(), (0.20, 0.0, 0.90), camera_orient(15.0))
+    add_semantics(sm.GetPrim(), "rover_sensor")
+
+    # IMU at chassis centre
+    im = UsdGeom.Xform.Define(stage, "/rover/Sensors/imu_mount")
+    set_xform(im.GetPrim(), (0.0, 0.0, 0.325))
+    add_semantics(im.GetPrim(), "rover_sensor")
+
+    # Rear proximity sensor
+    rm = UsdGeom.Xform.Define(stage, "/rover/Sensors/rear_proximity")
+    set_xform(rm.GetPrim(), (-0.35, 0.0, 0.30),
+              quat_from_axis_angle((0, 0, 1), 180.0))
+    add_semantics(rm.GetPrim(), "rover_sensor")
+
     stage.GetRootLayer().Save()
     _mk_interface("assets/robots/rover/rover.usda", "rover_geom.usdc", "rover",
                   ((-0.35, -0.33, 0.0), (0.35, 0.33, ROVER_TILT_Z + 0.05)),

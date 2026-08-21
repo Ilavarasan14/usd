@@ -202,6 +202,49 @@ def Xform "World"
                     }
                 }
 
+                def "Sensors"
+                {
+                    def "lidar_mount"
+                    {
+                        def IsaacRtxLidar "obstacle_lidar"
+                        {
+                            float inputs:horizontalFov = 220
+                            uint inputs:horizontalResolution = 512
+                            float inputs:range = 10
+                            float inputs:verticalFov = 30
+                            uint inputs:verticalResolution = 8
+                            bool isaac:obstacleDetection = 1
+                            token sensor:type = "raycast"
+                        }
+                    }
+
+                    def "scanner_mount"
+                    {
+                        def Camera "barcode_cam"
+                        {
+                            float2 clippingRange = (0.05, 2)
+                            float focalLength = 1.88
+                            float horizontalAperture = 2.604
+                            custom string isaac:note = "Barcode scanner camera. Short-range (0.05-2 m), aimed 15 deg down from the rover mast at 0.90 m. Bind to a Replicator render product and feed the output to a barcode-decode action graph node."
+                            token projection = "perspective"
+                            float verticalAperture = 1.4648
+                            quatd xformOp:orient = (1, 0, 0, 0)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                        }
+                    }
+
+                    over "imu_mount"
+                    {
+                        custom string isaac:note = "IMU sensor. Mount pose: (0, 0, 0.325) m, chassis centre. Create with isaacsim.sensors.physics in Kit."
+                    }
+
+                    over "rear_proximity"
+                    {
+                        custom string isaac:note = "Rear proximity sensor, facing -X. Detect obstacles behind during reverse manoeuvres. Range 3 m."
+                    }
+                }
+
                 def "ViewCameras"
                 {
                     def Camera "chase"

@@ -306,6 +306,42 @@ def author_sensors():
             "joint_pan (Z, +/-175 deg) and joint_tilt (Y, +/-45 deg).")
         n_cam += 1
 
+        # Rover sensors: lidar, barcode scanner, IMU, rear proximity
+        stage.OverridePrim(base + "/Sensors")
+        rlm = stage.OverridePrim(base + "/Sensors/lidar_mount")
+        rlidar = stage.DefinePrim(base + "/Sensors/lidar_mount/obstacle_lidar",
+                                  "IsaacRtxLidar")
+        set_attr(rlidar, "sensor:type", "token", "raycast")
+        set_attr(rlidar, "inputs:horizontalFov", "float", 220.0)
+        set_attr(rlidar, "inputs:horizontalResolution", "uint", 512)
+        set_attr(rlidar, "inputs:verticalFov", "float", 30.0)
+        set_attr(rlidar, "inputs:verticalResolution", "uint", 8)
+        set_attr(rlidar, "inputs:range", "float", 10.0)
+        set_attr(rlidar, "isaac:obstacleDetection", "bool", True)
+
+        stage.OverridePrim(base + "/Sensors/scanner_mount")
+        scanner = camera(base + "/Sensors/scanner_mount/barcode_cam",
+                         CAM_FOCAL, CAM_HAPERTURE, CAM_VAPERTURE, (0.05, 2.0))
+        set_xform(scanner.GetPrim())
+        scanner.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                          custom=True).Set(
+            "Barcode scanner camera. Short-range (0.05-2 m), aimed 15 deg down "
+            "from the rover mast at 0.90 m. Bind to a Replicator render product "
+            "and feed the output to a barcode-decode action graph node.")
+        n_cam += 1
+
+        rim = stage.OverridePrim(base + "/Sensors/imu_mount")
+        rim.CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                            custom=True).Set(
+            "IMU sensor. Mount pose: (0, 0, 0.325) m, chassis centre. "
+            "Create with isaacsim.sensors.physics in Kit.")
+
+        rrm = stage.OverridePrim(base + "/Sensors/rear_proximity")
+        rrm.CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                            custom=True).Set(
+            "Rear proximity sensor, facing -X. Detect obstacles behind during "
+            "reverse manoeuvres. Range 3 m.")
+
     # ---- third-person views of the rover ------------------------------
     UsdGeom.Scope.Define(stage, "/World/Simulation")
     UsdGeom.Scope.Define(stage, "/World/Simulation/ViewCameras")
