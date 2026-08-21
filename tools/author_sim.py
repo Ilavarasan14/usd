@@ -90,7 +90,7 @@ def author_physics():
     return dict(materials=len(mats), solver="TGS",
                 timeStepsPerSecond=TIME_STEPS_PER_SECOND,
                 gpu_dynamics=False,
-                dynamic_actors=10 + len(FLEET) * 7)
+                dynamic_actors=10 + len(FLEET) * 7 + len(ROVERS) * 5)
 
 
 # ----------------------------------------------------------------- materials
