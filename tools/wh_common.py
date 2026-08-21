@@ -65,6 +65,19 @@ AMR_WHEEL_MASS = 1.2
 AMR_CASTER_MASS = 0.4
 AMR_BRACKET_MASS = 0.5
 
+# --- inspection rover: 4-wheel skid steer with a pan/tilt camera mast -------
+ROVER_L, ROVER_W, ROVER_BODY_H = 0.70, 0.50, 0.25
+ROVER_WHEEL_R, ROVER_WHEEL_T = 0.15, 0.08
+ROVER_WHEELBASE, ROVER_TRACK = 0.50, 0.58     # centre-to-centre
+ROVER_CLEARANCE = 0.20                        # chassis underside above ground
+ROVER_MAST_TOP = 1.10
+ROVER_PAN_Z, ROVER_TILT_Z = 1.15, 1.22
+ROVER_CHASSIS_MASS = 55.0
+ROVER_WHEEL_MASS = 2.5
+ROVER_PAN_MASS, ROVER_TILT_MASS = 1.5, 2.0
+ROVER_TILT_LIMITS = (-45.0, 45.0)             # degrees
+ROVER_PAN_LIMITS = (-175.0, 175.0)
+
 DOCK_DOOR_W, DOCK_DOOR_H = 2.75, 3.00
 HUMAN_REF = 1.70                              # 1.7 m human, sanity reference
 
@@ -90,6 +103,7 @@ SEMANTIC_CLASSES = [
     "pallet", "tote", "bollard", "floor_marking",
     "dock_door", "charger", "light_fixture",
     "amr", "amr_wheel", "amr_sensor",
+    "rover", "rover_wheel", "rover_sensor",
 ]
 
 

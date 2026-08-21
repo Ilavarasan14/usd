@@ -11,6 +11,8 @@ FLEET = [
     ("amr_tote_03",  -6.0, AISLE_Y[2],   0.0),    # north aisle, outbound
     ("amr_tote_04",   0.0,   8.0,      -90.0),    # cross-aisle, heading -Y
 ]
+# Inspection rover. Centre aisle, outbound, 10 m clear of amr_tote_01.
+ROVERS = [("rover_01", -8.0, AISLE_Y[1], 0.0)]
 STAGED_PALLET_Y = [-8.5, -7.2, -5.9, 5.9, 7.2, 8.5]
 STAGED_PALLET_X = -28.2
 EMPTY_PALLET_MASS = 25.0
@@ -34,6 +36,12 @@ def author_placements():
         set_xform(p, (x, y, floor_z(x, y)), quat_from_axis_angle((0, 0, 1), hdg))
         # NOT instanceable: each robot needs its own articulation state and its
         # own sensor prims. Instance proxies are read-only.
+        p.SetInstanceable(False)
+
+    for name, x, y, hdg in ROVERS:
+        p = UsdGeom.Xform.Define(stage, f"/World/Scenario/Fleet/{name}").GetPrim()
+        p.GetReferences().AddReference("../assets/robots/rover/rover.usda")
+        set_xform(p, (x, y, floor_z(x, y)), quat_from_axis_angle((0, 0, 1), hdg))
         p.SetInstanceable(False)
 
     # ---- staged dynamic pallets at the west pick/drop station -------------
@@ -69,10 +77,11 @@ def author_placements():
             n_tote += 1
 
     stage.GetRootLayer().Save()
-    return dict(fleet=len(FLEET), staged_pallets=len(STAGED_PALLET_Y),
+    return dict(fleet=len(FLEET), rovers=len(ROVERS),
+                staged_pallets=len(STAGED_PALLET_Y),
                 totes=n_tote,
                 dynamic_bodies=len(STAGED_PALLET_Y) + n_tote,
-                articulation_links=len(FLEET) * 7)
+                articulation_links=len(FLEET) * 7 + len(ROVERS) * 8)
 
 
 def author_routes():

@@ -1,7 +1,7 @@
 """simulation/{physics,materials,sensors,semantics}.usda"""
 from pxr import Usd, UsdGeom, UsdShade, UsdPhysics, UsdSemantics, Sdf, Gf
 from wh_common import *
-from author_scenario import FLEET, STAGED_PALLET_Y
+from author_scenario import FLEET, ROVERS, STAGED_PALLET_Y
 
 ENV = "/World/Environment"
 SHELL = ENV + "/Shell"
@@ -79,11 +79,18 @@ def author_physics():
         bind(base + "/chassis", "steel_rack")
         for w in ("wheel_left", "wheel_right", "caster_f_wheel", "caster_r_wheel"):
             bind(f"{base}/{w}", "rubber_wheel")
+    for name, *_ in ROVERS:
+        base = f"/World/Scenario/Fleet/{name}"
+        for part in ("chassis", "pan_head", "tilt_head"):
+            bind(f"{base}/{part}", "steel_rack")
+        for w in ("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"):
+            bind(f"{base}/{w}", "rubber_wheel")
 
     stage.GetRootLayer().Save()
     return dict(materials=len(mats), solver="TGS",
                 timeStepsPerSecond=TIME_STEPS_PER_SECOND,
-                gpu_dynamics=False, dynamic_actors=10 + len(FLEET) * 7)
+                gpu_dynamics=False,
+                dynamic_actors=10 + len(FLEET) * 7 + len(ROVERS) * 8)
 
 
 # ----------------------------------------------------------------- materials
@@ -166,6 +173,12 @@ def author_materials():
         bind(base + "/chassis", "amr_shell")
         for w in ("wheel_left", "wheel_right", "caster_f_wheel", "caster_r_wheel"):
             bind(f"{base}/{w}", "amr_rubber")
+    for name, *_ in ROVERS:
+        base = f"/World/Scenario/Fleet/{name}"
+        for part in ("chassis", "pan_head", "tilt_head"):
+            bind(f"{base}/{part}", "amr_shell")
+        for w in ("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"):
+            bind(f"{base}/{w}", "amr_rubber")
 
     stage.GetRootLayer().Save()
     return dict(materials=len(made), mdl="OmniPBR.mdl",
@@ -185,6 +198,12 @@ CAM_CLIP = (0.105, 10.0)
 # Fixed ceiling cameras for site-wide SDG. 6 mm lens on a 1/1.8" sensor
 # (7.18 x 5.32 mm) -> HFOV 61.6 deg.
 FIXED_FOCAL, FIXED_HAP, FIXED_VAP = 6.0, 7.18, 5.32
+
+# Rover first-person view. Wide-angle inspection lens: 2.8 mm on a 1/2.3"
+# sensor (5.6 x 3.15 mm active, 16:9) -> HFOV 90.0 deg, VFOV 58.7 deg.
+# Near clip 0.05 m so the rover's own mast stays visible at the frame edge.
+ROVER_FOCAL, ROVER_HAP, ROVER_VAP = 2.8, 5.6, 3.15
+ROVER_CLIP = (0.05, 40.0)
 
 
 def author_sensors():
@@ -232,6 +251,24 @@ def author_sensors():
             "extension. Mount pose is final: (0, 0, 0.24) m, coincident with "
             "the chassis body origin.")
 
+    # ---- rover first-person view -------------------------------------
+    # Parented under tilt_head/camera_mount so the pan and tilt joints
+    # genuinely aim it -- driving joint_pan / joint_tilt moves the shot.
+    for name, *_ in ROVERS:
+        base = f"/World/Scenario/Fleet/{name}"
+        stage.OverridePrim(base)
+        stage.OverridePrim(base + "/tilt_head")
+        stage.OverridePrim(base + "/tilt_head/camera_mount")
+        c = camera(base + "/tilt_head/camera_mount/pov",
+                   ROVER_FOCAL, ROVER_HAP, ROVER_VAP, ROVER_CLIP)
+        set_xform(c.GetPrim())      # inherits the mount pose exactly
+        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                    custom=True).Set(
+            "Rover first-person view. Select this prim as the active viewport "
+            "camera, or bind it to a Replicator render product. Aimed by "
+            "joint_pan (Z, +/-175 deg) and joint_tilt (Y, +/-45 deg).")
+        n_cam += 1
+
     # fixed ceiling cameras, one per aisle, looking straight down
     UsdGeom.Scope.Define(stage, "/World/Simulation")
     fx = UsdGeom.Scope.Define(stage, "/World/Simulation/FixedCameras")
@@ -248,7 +285,10 @@ def author_sensors():
     hfov = 2 * math.degrees(math.atan(CAM_HAPERTURE / (2 * CAM_FOCAL)))
     vfov = 2 * math.degrees(math.atan(CAM_VAPERTURE / (2 * CAM_FOCAL)))
     ffov = 2 * math.degrees(math.atan(FIXED_HAP / (2 * FIXED_FOCAL)))
-    return dict(cameras=n_cam, robot_hfov=round(hfov, 1), robot_vfov=round(vfov, 1),
+    rhfov = 2 * math.degrees(math.atan(ROVER_HAP / (2 * ROVER_FOCAL)))
+    rvfov = 2 * math.degrees(math.atan(ROVER_VAP / (2 * ROVER_FOCAL)))
+    return dict(cameras=n_cam, amr_hfov=round(hfov, 1), amr_vfov=round(vfov, 1),
+                rover_pov_hfov=round(rhfov, 1), rover_pov_vfov=round(rvfov, 1),
                 fixed_hfov=round(ffov, 1), rtx_lidar="mount only, not authored",
                 imu="mount only, not authored")
 
@@ -298,6 +338,9 @@ def author_semantics():
     for name, *_ in FLEET:
         add_semantics(stage.OverridePrim(f"/World/Scenario/Fleet/{name}"), "amr")
         n += 1
+    for name, *_ in ROVERS:
+        add_semantics(stage.OverridePrim(f"/World/Scenario/Fleet/{name}"), "rover")
+        n += 1
     for i in range(len(AISLE_Y)):
         add_semantics(
             stage.OverridePrim(f"/World/Simulation/FixedCameras/ceiling_{i:02d}"),
@@ -305,5 +348,6 @@ def author_semantics():
         n += 1
     stage.GetRootLayer().Save()
     used = sorted({l for _, l in SEMANTIC_MAP} |
-                  {"rack_upright", "pallet", "tote", "amr", "amr_sensor"})
+                  {"rack_upright", "pallet", "tote", "amr", "amr_sensor",
+                   "rover", "rover_sensor"})
     return dict(labelled_prims=n, taxonomy="class", classes_used=used)

@@ -103,6 +103,8 @@ def placed_assets(stage):
             k = cls
             if cls == "staged":
                 k = "tote" if c.GetName().startswith("tote") else "pallet"
+            elif cls == "amr" and c.GetName().startswith("rover"):
+                k = "rover"
             out.append((c, k))
     return out
 
@@ -332,6 +334,7 @@ def check_transforms(stage):
 # ------------------------------------------------------------- 7. scale sanity
 CLASS_BOUNDS = {   # (dx, dy, dz) plausible min/max per placed class, metres
     "amr":     ((0.6, 0.4, 0.15), (1.4, 1.0, 0.9)),
+    "rover":   ((0.5, 0.4, 0.8),  (1.2, 1.0, 1.6)),
     "pallet":  ((0.7, 0.7, 0.10), (1.4, 1.4, 1.9)),
     "tote":    ((0.3, 0.3, 0.20), (0.8, 0.8, 0.6)),
     "bollard": ((0.10, 0.10, 0.6), (0.4, 0.4, 1.5)),
@@ -377,7 +380,7 @@ def check_navigable(stage, assets, bbc):
     fails = 0
     worst = ("", 1e9)
     for prim, kind in assets:
-        if kind != "amr":
+        if kind not in ("amr", "rover"):
             continue
         r = bbc.ComputeWorldBound(prim).ComputeAlignedRange()
         mn, mx = r.GetMin(), r.GetMax()
@@ -406,7 +409,7 @@ def check_navigable(stage, assets, bbc):
                 f"{prim.GetPath().name} clears racking by only {margin:.3f} m")
     if fails == 0:
         rec("PASS", "navigable",
-            f"all AMRs inside their corridor; tightest lateral clearance "
+            f"all AMRs and rovers inside their corridor; tightest lateral clearance "
             f"{worst[1]:.3f} m ({worst[0]}) in a {AISLE_W:.1f} m aisle")
     return fails
 

@@ -251,6 +251,13 @@ def Xform "World"
             {
                 token[] semantics:labels:class = ["amr"]
             }
+
+            over "rover_01" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["rover"]
+            }
         }
     }
 

@@ -136,6 +136,28 @@ def Xform "World"
                     }
                 }
             }
+
+            def "rover_01"
+            {
+                def "tilt_head"
+                {
+                    def "camera_mount"
+                    {
+                        def Camera "pov"
+                        {
+                            float2 clippingRange = (0.05, 40)
+                            float focalLength = 2.8
+                            float horizontalAperture = 5.6
+                            custom string isaac:note = "Rover first-person view. Select this prim as the active viewport camera, or bind it to a Replicator render product. Aimed by joint_pan (Z, +/-175 deg) and joint_tilt (Y, +/-45 deg)."
+                            token projection = "perspective"
+                            float verticalAperture = 3.15
+                            quatd xformOp:orient = (1, 0, 0, 0)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                        }
+                    }
+                }
+            }
         }
     }
 

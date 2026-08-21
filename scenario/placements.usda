@@ -56,6 +56,16 @@ def Xform "World" (
                 double3 xformOp:translate = (0, 8, 0.1)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
+
+            def Xform "rover_01" (
+                instanceable = false
+                prepend references = @../assets/robots/rover/rover.usda@
+            )
+            {
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-8, 0, 0.06124747014490655)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
         }
 
         def Scope "Staged"

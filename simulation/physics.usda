@@ -505,6 +505,72 @@ def Xform "World"
                     )
                 }
             }
+
+            over "rover_01"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "pan_head" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "tilt_head" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_fl" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_fr" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_rl" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_rr" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
         }
     }
 }

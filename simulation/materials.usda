@@ -894,6 +894,72 @@ def Xform "World"
                     )
                 }
             }
+
+            over "rover_01"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "pan_head" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "tilt_head" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_fl" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_fr" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_rl" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_rr" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
         }
     }
 }
