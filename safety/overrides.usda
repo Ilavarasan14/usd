@@ -1,0 +1,20 @@
+#usda 1.0
+(
+    doc = """STRONGEST layer in the composition. Corrections only.
+
+             Rules:
+               - `over` only. Never author a `def` here.
+               - Every opinion must cite the validation check that produced it.
+               - Empty is the correct state for a scene that passes validation.
+
+             Populated by tools/validate_scene.py --fix, or by hand when a
+             validation failure has an unambiguous correction."""
+    metersPerUnit = 1.0
+    kilogramsPerUnit = 1.0
+    upAxis = "Z"
+    timeCodesPerSecond = 60
+)
+
+over "World"
+{
+}

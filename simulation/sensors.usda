@@ -1,0 +1,184 @@
+#usda 1.0
+(
+    doc = "Cameras. RTX Lidar and IMU prims are NOT authored here -- see the note attribute on each mount."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def "Scenario"
+    {
+        def "Fleet"
+        {
+            def "amr_tote_01"
+            {
+                def "Sensors"
+                {
+                    def "camera_mount"
+                    {
+                        def Camera "rgb"
+                        {
+                            float2 clippingRange = (0.105, 10)
+                            float focalLength = 1.88
+                            float horizontalAperture = 2.604
+                            token projection = "perspective"
+                            float verticalAperture = 1.4648
+                            quatd xformOp:orient = (1, 0, 0, 0)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                        }
+                    }
+
+                    over "lidar_mount"
+                    {
+                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                    }
+
+                    over "imu_mount"
+                    {
+                        custom string isaac:note = "IMU not authored offline -- isaacsim.sensors.physics is a Kit extension. Mount pose is final: (0, 0, 0.24) m, coincident with the chassis body origin."
+                    }
+                }
+            }
+
+            def "amr_tote_02"
+            {
+                def "Sensors"
+                {
+                    def "camera_mount"
+                    {
+                        def Camera "rgb"
+                        {
+                            float2 clippingRange = (0.105, 10)
+                            float focalLength = 1.88
+                            float horizontalAperture = 2.604
+                            token projection = "perspective"
+                            float verticalAperture = 1.4648
+                            quatd xformOp:orient = (1, 0, 0, 0)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                        }
+                    }
+
+                    over "lidar_mount"
+                    {
+                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                    }
+
+                    over "imu_mount"
+                    {
+                        custom string isaac:note = "IMU not authored offline -- isaacsim.sensors.physics is a Kit extension. Mount pose is final: (0, 0, 0.24) m, coincident with the chassis body origin."
+                    }
+                }
+            }
+
+            def "amr_tote_03"
+            {
+                def "Sensors"
+                {
+                    def "camera_mount"
+                    {
+                        def Camera "rgb"
+                        {
+                            float2 clippingRange = (0.105, 10)
+                            float focalLength = 1.88
+                            float horizontalAperture = 2.604
+                            token projection = "perspective"
+                            float verticalAperture = 1.4648
+                            quatd xformOp:orient = (1, 0, 0, 0)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                        }
+                    }
+
+                    over "lidar_mount"
+                    {
+                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                    }
+
+                    over "imu_mount"
+                    {
+                        custom string isaac:note = "IMU not authored offline -- isaacsim.sensors.physics is a Kit extension. Mount pose is final: (0, 0, 0.24) m, coincident with the chassis body origin."
+                    }
+                }
+            }
+
+            def "amr_tote_04"
+            {
+                def "Sensors"
+                {
+                    def "camera_mount"
+                    {
+                        def Camera "rgb"
+                        {
+                            float2 clippingRange = (0.105, 10)
+                            float focalLength = 1.88
+                            float horizontalAperture = 2.604
+                            token projection = "perspective"
+                            float verticalAperture = 1.4648
+                            quatd xformOp:orient = (1, 0, 0, 0)
+                            double3 xformOp:translate = (0, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                        }
+                    }
+
+                    over "lidar_mount"
+                    {
+                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                    }
+
+                    over "imu_mount"
+                    {
+                        custom string isaac:note = "IMU not authored offline -- isaacsim.sensors.physics is a Kit extension. Mount pose is final: (0, 0, 0.24) m, coincident with the chassis body origin."
+                    }
+                }
+            }
+        }
+    }
+
+    def Scope "Simulation"
+    {
+        def Scope "FixedCameras"
+        {
+            def Camera "ceiling_00"
+            {
+                float2 clippingRange = (0.5, 30)
+                float focalLength = 6
+                float horizontalAperture = 7.18
+                token projection = "perspective"
+                float verticalAperture = 5.32
+                quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+                double3 xformOp:translate = (0, -5.9, 10.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "ceiling_01"
+            {
+                float2 clippingRange = (0.5, 30)
+                float focalLength = 6
+                float horizontalAperture = 7.18
+                token projection = "perspective"
+                float verticalAperture = 5.32
+                quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+                double3 xformOp:translate = (0, 0, 10.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "ceiling_02"
+            {
+                float2 clippingRange = (0.5, 30)
+                float focalLength = 6
+                float horizontalAperture = 7.18
+                token projection = "perspective"
+                float verticalAperture = 5.32
+                quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+                double3 xformOp:translate = (0, 5.9, 10.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+    }
+}
+

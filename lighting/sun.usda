@@ -1,0 +1,26 @@
+#usda 1.0
+(
+    doc = "Solar DistantLight. Site 39.5296N 119.8138W, 2026-06-21 10:00 PDT. Computed azimuth 99.07 deg from north, elevation 48.68 deg. Indoors the roof occludes this light almost entirely -- it reaches the floor through the 32 skylight cells, which is the intended behaviour."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def Scope "Lighting"
+    {
+        def DistantLight "sun"
+        {
+            float inputs:angle = 0.53
+            color3f inputs:color = (1, 0.955, 0.9)
+            float inputs:exposure = 9.5
+            float inputs:intensity = 3.2
+            quatd xformOp:orient = (0.9357050888032402, 0.055631193661867764, 0.34836928262904593, -0)
+            double3 xformOp:translate = (0, 0, 15.5)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+    }
+}
+

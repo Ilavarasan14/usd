@@ -1,0 +1,101 @@
+#usda 1.0
+(
+    doc = "Navigation graph: aisle and cross-aisle centrelines as BasisCurves, plus named waypoints. Guide purpose -- never rendered, never collided."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def Scope "Scenario"
+    {
+        def Scope "Routes"
+        {
+            def BasisCurves "centrelines"
+            {
+                int[] curveVertexCounts = [25, 25, 25, 13]
+                float3[] extent = [(-28, -10.5, 0.0575), (28, 10.5, 0.1625)]
+                point3f[] points = [(-28, -5.9, 0.07604724), (-25.666666, -5.9, 0.07468621), (-23.333334, -5.9, 0.078450695), (-21, -5.9, 0.08402188), (-18.666666, -5.9, 0.08648813), (-16.333334, -5.9, 0.08367516), (-14, -5.9, 0.07806292), (-11.666667, -5.9, 0.07459925), (-9.333333, -5.9, 0.07633776), (-7, -5.9, 0.08174576), (-4.6666665, -5.9, 0.08605548), (-2.3333333, -5.9, 0.085467406), (0, -5.9, 0.0805), (2.3333333, -5.9, 0.07553259), (4.6666665, -5.9, 0.07494452), (7, -5.9, 0.07925424), (9.333333, -5.9, 0.084662236), (11.666667, -5.9, 0.08640075), (14, -5.9, 0.08293708), (16.333334, -5.9, 0.077324845), (18.666666, -5.9, 0.07451187), (21, -5.9, 0.076978125), (23.333334, -5.9, 0.08254931), (25.666666, -5.9, 0.0863138), (28, -5.9, 0.08495276), (-28, 0, 0.11445887), (-25.666666, 0, 0.11582177), (-23.333334, 0, 0.11205212), (-21, 0, 0.10647329), (-18.666666, 0, 0.10400365), (-16.333334, 0, 0.10682049), (-14, 0, 0.11244042), (-11.666667, 0, 0.115908846), (-9.333333, 0, 0.11416795), (-7, 0, 0.10875253), (-4.6666665, 0, 0.1044369), (-2.3333333, 0, 0.105025776), (0, 0, 0.11), (2.3333333, 0, 0.11497422), (4.6666665, 0, 0.1155631), (7, 0, 0.11124747), (9.333333, 0, 0.10583205), (11.666667, 0, 0.10409115), (14, 0, 0.10755958), (16.333334, 0, 0.11317951), (18.666666, 0, 0.115996346), (21, 0, 0.11352671), (23.333334, 0, 0.10794788), (25.666666, 0, 0.10417823), (28, 0, 0.10554113), (-28, 5.9, 0.13504724), (-25.666666, 5.9, 0.1336862), (-23.333334, 5.9, 0.1374507), (-21, 5.9, 0.14302188), (-18.666666, 5.9, 0.14548813), (-16.333334, 5.9, 0.14267516), (-14, 5.9, 0.13706292), (-11.666667, 5.9, 0.13359925), (-9.333333, 5.9, 0.13533776), (-7, 5.9, 0.14074576), (-4.6666665, 5.9, 0.14505547), (-2.3333333, 5.9, 0.14446741), (0, 5.9, 0.1395), (2.3333333, 5.9, 0.13453259), (4.6666665, 5.9, 0.13394453), (7, 5.9, 0.13825424), (9.333333, 5.9, 0.14366224), (11.666667, 5.9, 0.14540075), (14, 5.9, 0.14193708), (16.333334, 5.9, 0.13632484), (18.666666, 5.9, 0.13351187), (21, 5.9, 0.13597812), (23.333334, 5.9, 0.1415493), (25.666666, 5.9, 0.1453138), (28, 5.9, 0.14395276), (0, -10.5, 0.0575), (0, -8.75, 0.06625), (0, -7, 0.075), (0, -5.25, 0.08375), (0, -3.5, 0.0925), (0, -1.75, 0.10125), (0, 0, 0.11), (0, 1.75, 0.11875), (0, 3.5, 0.1275), (0, 5.25, 0.13625), (0, 7, 0.145), (0, 8.75, 0.15375), (0, 10.5, 0.1625)]
+                uniform token purpose = "guide"
+                uniform token type = "linear"
+                float[] widths = [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05] (
+                    interpolation = "vertex"
+                )
+                uniform token wrap = "nonperiodic"
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Scope "Waypoints"
+            {
+                def Xform "pick_drop_west"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (6.123233995736766e-17, 0, 0, 1)
+                    double3 xformOp:translate = (-27, 0, 0.06570633909777092)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "dock_east_a"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (1, 0, 0, 0)
+                    double3 xformOp:translate = (25.5, -6.75, 0.03152196989799948)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "dock_east_b"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (1, 0, 0, 0)
+                    double3 xformOp:translate = (25.5, -2.25, 0.046566278567825914)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "dock_east_c"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (1, 0, 0, 0)
+                    double3 xformOp:translate = (25.5, 2.25, 0.06906627856782592)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "dock_east_d"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (1, 0, 0, 0)
+                    double3 xformOp:translate = (25.5, 6.75, 0.09902196989799948)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "charge_00"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (6.123233995736766e-17, 0, 0, 1)
+                    double3 xformOp:translate = (-27.6, -2.4, 0.049565470066832804)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "charge_01"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (6.123233995736766e-17, 0, 0, 1)
+                    double3 xformOp:translate = (-27.6, 0, 0.06506596755301208)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+
+                def Xform "charge_02"
+                {
+                    uniform token purpose = "guide"
+                    quatd xformOp:orient = (6.123233995736766e-17, 0, 0, 1)
+                    double3 xformOp:translate = (-27.6, 2.4, 0.07356547006683281)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                }
+            }
+        }
+    }
+}
+

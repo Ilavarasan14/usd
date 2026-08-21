@@ -1,0 +1,900 @@
+#usda 1.0
+(
+    doc = "Visual materials. Each carries BOTH an MDL surface (OmniPBR -- what the RTX renderer consumes) and a UsdPreviewSurface, so the stage still shades correctly when opened outside Omniverse."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def Scope "Looks"
+    {
+        def Material "concrete_floor"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/concrete_floor/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/concrete_floor/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/concrete_floor/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/concrete_floor/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.42, 0.42, 0.44)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.55
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.42, 0.42, 0.44)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.55
+                token outputs:surface
+            }
+        }
+
+        def Material "wall_panel"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/wall_panel/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/wall_panel/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/wall_panel/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/wall_panel/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.72, 0.71, 0.68)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.75
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.72, 0.71, 0.68)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+
+        def Material "roof_deck"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/roof_deck/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/roof_deck/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/roof_deck/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/roof_deck/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.55, 0.56, 0.58)
+                float inputs:metallic_constant = 0.6
+                float inputs:reflection_roughness_constant = 0.65
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.55, 0.56, 0.58)
+                float inputs:metallic = 0.6
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "column_grey"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/column_grey/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/column_grey/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/column_grey/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/column_grey/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.6, 0.6, 0.62)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.7
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.6, 0.6, 0.62)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.7
+                token outputs:surface
+            }
+        }
+
+        def Material "rack_upright_blue"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/rack_upright_blue/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/rack_upright_blue/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/rack_upright_blue/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/rack_upright_blue/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.1, 0.2, 0.45)
+                float inputs:metallic_constant = 0.4
+                float inputs:reflection_roughness_constant = 0.45
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.1, 0.2, 0.45)
+                float inputs:metallic = 0.4
+                float inputs:roughness = 0.45
+                token outputs:surface
+            }
+        }
+
+        def Material "rack_beam_orange"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/rack_beam_orange/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/rack_beam_orange/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/rack_beam_orange/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/rack_beam_orange/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.85, 0.35, 0.05)
+                float inputs:metallic_constant = 0.4
+                float inputs:reflection_roughness_constant = 0.42
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.85, 0.35, 0.05)
+                float inputs:metallic = 0.4
+                float inputs:roughness = 0.42
+                token outputs:surface
+            }
+        }
+
+        def Material "pallet_wood"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/pallet_wood/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/pallet_wood/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/pallet_wood/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/pallet_wood/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.58, 0.44, 0.28)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.8
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.58, 0.44, 0.28)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.8
+                token outputs:surface
+            }
+        }
+
+        def Material "carton_tan"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/carton_tan/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/carton_tan/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/carton_tan/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/carton_tan/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.72, 0.6, 0.44)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.85
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.72, 0.6, 0.44)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.85
+                token outputs:surface
+            }
+        }
+
+        def Material "tote_plastic"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/tote_plastic/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/tote_plastic/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/tote_plastic/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/tote_plastic/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.15, 0.3, 0.55)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.35
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.15, 0.3, 0.55)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.35
+                token outputs:surface
+            }
+        }
+
+        def Material "amr_shell"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/amr_shell/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/amr_shell/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/amr_shell/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/amr_shell/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.18, 0.19, 0.21)
+                float inputs:metallic_constant = 0.2
+                float inputs:reflection_roughness_constant = 0.4
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.18, 0.19, 0.21)
+                float inputs:metallic = 0.2
+                float inputs:roughness = 0.4
+                token outputs:surface
+            }
+        }
+
+        def Material "amr_rubber"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/amr_rubber/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/amr_rubber/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/amr_rubber/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/amr_rubber/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.05, 0.05, 0.05)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.85
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.05, 0.05, 0.05)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.85
+                token outputs:surface
+            }
+        }
+
+        def Material "dock_door_steel"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/dock_door_steel/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/dock_door_steel/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/dock_door_steel/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/dock_door_steel/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.66, 0.67, 0.69)
+                float inputs:metallic_constant = 0.7
+                float inputs:reflection_roughness_constant = 0.5
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.66, 0.67, 0.69)
+                float inputs:metallic = 0.7
+                float inputs:roughness = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "floor_paint_yellow"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/floor_paint_yellow/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/floor_paint_yellow/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/floor_paint_yellow/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/floor_paint_yellow/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.85, 0.68, 0.05)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.6
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.85, 0.68, 0.05)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
+
+        def Material "safety_yellow"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/safety_yellow/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/safety_yellow/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/safety_yellow/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/safety_yellow/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.9, 0.72, 0.02)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.55
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.9, 0.72, 0.02)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.55
+                token outputs:surface
+            }
+        }
+
+        def Material "charger_housing"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/charger_housing/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/charger_housing/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/charger_housing/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/charger_housing/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.88, 0.88, 0.86)
+                float inputs:metallic_constant = 0.1
+                float inputs:reflection_roughness_constant = 0.45
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.88, 0.88, 0.86)
+                float inputs:metallic = 0.1
+                float inputs:roughness = 0.45
+                token outputs:surface
+            }
+        }
+    }
+
+    over "Environment"
+    {
+        over "Shell"
+        {
+            over "floor_slab" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_north" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/wall_panel> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_south" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/wall_panel> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_east" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/wall_panel> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_west" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/wall_panel> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "roof_deck" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/roof_deck> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "columns" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/column_grey> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+
+        over "Racking"
+        {
+            over "rack_run_00" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/rack_beam_orange> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "rack_run_01" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/rack_beam_orange> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "rack_run_02" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/rack_beam_orange> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "rack_run_03" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/rack_beam_orange> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+
+        over "Infrastructure"
+        {
+            over "dock_doors" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/dock_door_steel> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "dock_bumpers" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/amr_rubber> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "chargers" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/charger_housing> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "Bollards" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/safety_yellow> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "FloorMarkings" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/floor_paint_yellow> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "GroundInventory" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "RackedPallets" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+    }
+
+    over "Scenario"
+    {
+        over "Staged"
+        {
+            over "pallet_00" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_01" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_02" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_03" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_04" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_05" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/pallet_wood> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_00" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/tote_plastic> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_01" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/tote_plastic> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_02" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/tote_plastic> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_03" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/tote_plastic> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+
+        over "Fleet"
+        {
+            over "amr_tote_01"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "amr_tote_02"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "amr_tote_03"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "amr_tote_04"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_shell> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/amr_rubber> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+        }
+    }
+}
+

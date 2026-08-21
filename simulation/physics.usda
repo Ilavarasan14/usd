@@ -1,0 +1,511 @@
+#usda 1.0
+(
+    doc = "PhysicsScene, physics materials and their bindings. Bindings are authored as `over` -- the prims themselves are defined in the environment and scenario layers."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def PhysicsScene "physicsScene" (
+        apiSchemas = ["PhysxSceneAPI"]
+    )
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+        bool physxScene:enableCCD = 1
+        bool physxScene:enableGPUDynamics = 0
+        bool physxScene:enableStabilization = 1
+        token physxScene:solverType = "TGS"
+        uint physxScene:timeStepsPerSecond = 60
+    }
+
+    def Scope "PhysicsMaterials"
+    {
+        def Material "concrete_floor" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.65
+            float physics:restitution = 0.05
+            float physics:staticFriction = 0.75
+        }
+
+        def Material "rubber_wheel" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.85
+            float physics:restitution = 0.05
+            float physics:staticFriction = 0.95
+        }
+
+        def Material "steel_rack" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.35
+            float physics:restitution = 0.2
+            float physics:staticFriction = 0.4
+        }
+
+        def Material "wood_pallet" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.45
+            float physics:restitution = 0.1
+            float physics:staticFriction = 0.55
+        }
+
+        def Material "plastic_tote" (
+            prepend apiSchemas = ["PhysicsMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.3
+            float physics:restitution = 0.15
+            float physics:staticFriction = 0.35
+        }
+    }
+
+    over "Environment"
+    {
+        over "Shell"
+        {
+            over "floor_slab" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_north" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_south" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_east" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "wall_west" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "roof_deck" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "columns" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/concrete_floor> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+
+        over "Racking"
+        {
+            over "rack_run_00" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "rack_run_01" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "rack_run_02" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "rack_run_03" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+
+        over "Infrastructure"
+        {
+            over "dock_doors" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "dock_bumpers" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "chargers" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "GroundInventory" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+    }
+
+    over "Scenario"
+    {
+        over "Staged"
+        {
+            over "pallet_00" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_01" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_02" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_03" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_04" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "pallet_05" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/wood_pallet> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_00" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/plastic_tote> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_01" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/plastic_tote> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_02" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/plastic_tote> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
+            over "tote_03" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding:physics = </World/PhysicsMaterials/plastic_tote> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+        }
+
+        over "Fleet"
+        {
+            over "amr_tote_01"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "amr_tote_02"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "amr_tote_03"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "amr_tote_04"
+            {
+                over "chassis" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/steel_rack> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_left" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "wheel_right" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_f_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "caster_r_wheel" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </World/PhysicsMaterials/rubber_wheel> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+        }
+    }
+}
+

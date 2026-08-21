@@ -1,0 +1,25 @@
+#usda 1.0
+(
+    doc = "Sky DomeLight. No HDRI is shipped with this scene, so a physically plausible clear-sky colour and intensity are used instead; swap inputs:texture:file for a measured HDRI when one is available. Indoors this mainly lights the floor through the skylights and provides the ambient bounce term."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def Scope "Lighting"
+    {
+        def DomeLight "sky"
+        {
+            color3f inputs:color = (0.62, 0.76, 1)
+            float inputs:exposure = 6
+            float inputs:intensity = 1
+            quatd xformOp:orient = (1, 0, 0, 0)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+        }
+    }
+}
+

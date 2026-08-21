@@ -1,0 +1,21 @@
+#usda 1.0
+(
+    defaultPrim = "pallet"
+    doc = "Pallet asset interface. Payload = pallet_geom.usdc."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "pallet" (
+    kind = "component"
+    prepend payload = @./pallet_geom.usdc@</pallet>
+    variants = {
+        string load = "full"
+    }
+)
+{
+    float3[] extentsHint = [(-0.6, -0.4, 0), (0.6, 0.4, 1.544)]
+}
+

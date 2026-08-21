@@ -1,0 +1,284 @@
+#usda 1.0
+(
+    doc = "SDG labels for Isaac Sim 6.0: UsdSemantics.LabelsAPI, taxonomy 'class'. The legacy Semantics.SemanticsAPI (semanticType/semanticData) is deprecated in 6.0 -- see isaacsim.core.utils.semantics.upgrade_prim_semantics_to_labels. `over` prims only; nothing is defined here."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    over "Environment"
+    {
+        over "Shell"
+        {
+            over "floor_slab" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["floor"]
+            }
+
+            over "wall_north" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["wall"]
+            }
+
+            over "wall_south" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["wall"]
+            }
+
+            over "wall_east" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["wall"]
+            }
+
+            over "wall_west" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["wall"]
+            }
+
+            over "roof_deck" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["ceiling"]
+            }
+
+            over "columns" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["column"]
+            }
+        }
+
+        over "Infrastructure"
+        {
+            over "dock_doors" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["dock_door"]
+            }
+
+            over "dock_bumpers" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["dock_door"]
+            }
+
+            over "chargers" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["charger"]
+            }
+
+            over "Bollards" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["bollard"]
+            }
+
+            over "FloorMarkings" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["floor_marking"]
+            }
+
+            over "RackedPallets" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "GroundInventory" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+        }
+
+        over "Racking"
+        {
+            over "rack_run_00" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["rack_upright"]
+            }
+
+            over "rack_run_01" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["rack_upright"]
+            }
+
+            over "rack_run_02" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["rack_upright"]
+            }
+
+            over "rack_run_03" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["rack_upright"]
+            }
+        }
+    }
+
+    over "Scenario"
+    {
+        over "Staged"
+        {
+            over "pallet_00" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "pallet_01" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "pallet_02" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "pallet_03" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "pallet_04" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "pallet_05" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["pallet"]
+            }
+
+            over "tote_00" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["tote"]
+            }
+
+            over "tote_01" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["tote"]
+            }
+
+            over "tote_02" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["tote"]
+            }
+
+            over "tote_03" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["tote"]
+            }
+        }
+
+        over "Fleet"
+        {
+            over "amr_tote_01" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr"]
+            }
+
+            over "amr_tote_02" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr"]
+            }
+
+            over "amr_tote_03" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr"]
+            }
+
+            over "amr_tote_04" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr"]
+            }
+        }
+    }
+
+    over "Simulation"
+    {
+        over "FixedCameras"
+        {
+            over "ceiling_00" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr_sensor"]
+            }
+
+            over "ceiling_01" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr_sensor"]
+            }
+
+            over "ceiling_02" (
+                prepend apiSchemas = ["SemanticsLabelsAPI:class"]
+            )
+            {
+                token[] semantics:labels:class = ["amr_sensor"]
+            }
+        }
+    }
+}
+

@@ -1,0 +1,18 @@
+#usda 1.0
+(
+    defaultPrim = "amr_tote"
+    doc = "AMR asset interface. Payload = amr_tote_geom.usdc. ArticulationRootAPI is on the payload root prim."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "amr_tote" (
+    kind = "component"
+    prepend payload = @./amr_tote_geom.usdc@</amr_tote>
+)
+{
+    float3[] extentsHint = [(-0.45, -0.31, 0), (0.45, 0.31, 0.35)]
+}
+

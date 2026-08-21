@@ -1,0 +1,21 @@
+#usda 1.0
+(
+    doc = "Mission schedule metadata. No animation is authored: the AMRs are driven by joint drives from the controller, and time-sampled joint targets would fight it."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def Scope "Scenario"
+    {
+        def Scope "Timeline"
+        {
+            custom double mission:durationSeconds = 30
+            custom string[] mission:tasks = ["amr_tote_01: pick_drop_west -> dock_east_c", "amr_tote_02: dock_east_a -> pick_drop_west", "amr_tote_03: charge_02 -> dock_east_d", "amr_tote_04: cross-aisle transit, north to south"]
+        }
+    }
+}
+

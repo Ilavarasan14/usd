@@ -1,0 +1,18 @@
+#usda 1.0
+(
+    defaultPrim = "tote"
+    doc = "Tote asset interface. Payload = tote_geom.usdc."
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "tote" (
+    kind = "component"
+    prepend payload = @./tote_geom.usdc@</tote>
+)
+{
+    float3[] extentsHint = [(-0.3, -0.2, 0), (0.3, 0.2, 0.32)]
+}
+

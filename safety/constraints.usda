@@ -1,0 +1,67 @@
+#usda 1.0
+(
+    doc = """Navigation and safety volumes. Authored as definitions because no
+             other layer owns them. Guide purpose -- never rendered, never collided.
+             Consumed by the nav stack / Replicator, not by PhysX."""
+    metersPerUnit = 1.0
+    kilogramsPerUnit = 1.0
+    upAxis = "Z"
+    timeCodesPerSecond = 60
+)
+
+over "World"
+{
+    def Scope "Safety" (
+        kind = "group"
+    )
+    {
+        def Scope "KeepOutZones"
+        {
+            # Dock apron -- trailer loading, AMRs excluded while a door is open.
+            def Cube "dock_apron" (
+                doc = "East dock apron, 4.0 m deep x 20.0 m wide x 3.0 m tall"
+            )
+            {
+                double size = 2
+                token purpose = "guide"
+                float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+                double3 xformOp:translate = (28, 0, 1.5)
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (2, 10, 1.5)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            # Charging bank -- manual-only zone, AMRs enter under docking control.
+            def Cube "charge_bank" (
+                doc = "West charging bank, 2.0 m deep x 6.0 m wide x 2.5 m tall"
+            )
+            {
+                double size = 2
+                token purpose = "guide"
+                float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+                double3 xformOp:translate = (-28.5, 0, 1.25)
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (1, 3, 1.25)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+        }
+
+        def Scope "SpeedZones"
+        {
+            # Cross-aisle intersection -- reduced speed, blind-corner risk.
+            def Cube "cross_aisle_slow" (
+                doc = "Cross-aisle span, limit 0.6 m/s"
+            )
+            {
+                double size = 2
+                token purpose = "guide"
+                float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+                double3 xformOp:translate = (0, 0, 1)
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (2.25, 12, 1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                custom float maxSpeed = 0.6
+            }
+        }
+    }
+}
