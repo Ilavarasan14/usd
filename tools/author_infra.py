@@ -13,7 +13,13 @@ CHARGER_Y = [-2.4, 0.0, 2.4]
 def floor_strip(stage, path, x0, x1, y_c, width, lift=0.002, step=1.0):
     """A marking strip conformed to the slab -- sampled against floor_z so it
     never floats over or sinks into the drainage fall."""
-    pts, counts, idx, sts = [], [], [], []
+    # Normalise the span: callers that pass x0 > x1 (the give-way bars at
+    # negative X did exactly that) would otherwise reverse the winding and the
+    # strip would face DOWN -- it renders black and is invisible to a
+    # downward-looking sensor. Explicit +Z normals belt-and-brace it.
+    if x1 < x0:
+        x0, x1 = x1, x0
+    pts, counts, idx, normals, sts = [], [], [], [], []
     n = max(2, int(abs(x1 - x0) / step) + 1)
     for i in range(n):
         x = x0 + (x1 - x0) * i / (n - 1)
@@ -23,10 +29,13 @@ def floor_strip(stage, path, x0, x1, y_c, width, lift=0.002, step=1.0):
         a = i * 2
         counts.append(4)
         idx.extend([a, a + 2, a + 3, a + 1])
+        normals.extend([Gf.Vec3f(0, 0, 1)] * 4)
     m = UsdGeom.Mesh.Define(stage, path)
     m.CreatePointsAttr(pts)
     m.CreateFaceVertexCountsAttr(counts)
     m.CreateFaceVertexIndicesAttr(idx)
+    m.CreateNormalsAttr(normals)
+    m.SetNormalsInterpolation(UsdGeom.Tokens.faceVarying)
     m.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
     m.CreateExtentAttr(UsdGeom.PointBased(m).ComputeExtent(pts))
     set_xform(m.GetPrim())

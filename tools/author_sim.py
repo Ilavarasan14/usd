@@ -1,6 +1,7 @@
 """simulation/{physics,materials,sensors,semantics}.usda"""
 from pxr import Usd, UsdGeom, UsdShade, UsdPhysics, UsdSemantics, Sdf, Gf
 from wh_common import *
+from wh_common import look_at_orient
 from author_scenario import FLEET, ROVERS, STAGED_PALLET_Y
 
 ENV = "/World/Environment"
@@ -205,6 +206,18 @@ FIXED_FOCAL, FIXED_HAP, FIXED_VAP = 6.0, 7.18, 5.32
 ROVER_FOCAL, ROVER_HAP, ROVER_VAP = 2.8, 5.6, 3.15
 ROVER_CLIP = (0.05, 40.0)
 
+# Third-person VIEW cameras -- for looking AT the rover, not for perception.
+# Full-frame equivalents (36 x 20.25 mm gate, 16:9) so the focal lengths read
+# the way a photographer expects: 35 mm wide, 50 mm normal.
+VIEW_HAP, VIEW_VAP, VIEW_CLIP = 36.0, 20.25, (0.1, 80.0)
+VIEW_CAMS = [
+    # name,            eye,                    target,            focal
+    ("rover_aisle",    (1.00, -1.10, 2.30), (-8.00, 0.00, 0.65), 35.0),
+    ("rover_closeup",  (-4.60, -1.25, 1.75), (-8.00, 0.00, 0.62), 50.0),
+]
+# Chase camera rides the rover root, so it follows the robot as it drives.
+CHASE_EYE, CHASE_TARGET, CHASE_FOCAL = (-2.40, -1.60, 1.80), (0.20, 0.0, 0.70), 35.0
+
 
 def author_sensors():
     import math
@@ -269,6 +282,31 @@ def author_sensors():
             "joint_pan (Z, +/-175 deg) and joint_tilt (Y, +/-45 deg).")
         n_cam += 1
 
+    # ---- third-person views of the rover ------------------------------
+    UsdGeom.Scope.Define(stage, "/World/Simulation")
+    UsdGeom.Scope.Define(stage, "/World/Simulation/ViewCameras")
+    for nm, eye, tgt, focal in VIEW_CAMS:
+        c = camera(f"/World/Simulation/ViewCameras/{nm}",
+                   focal, VIEW_HAP, VIEW_VAP, VIEW_CLIP)
+        set_xform(c.GetPrim(), eye, look_at_orient(eye, tgt))
+        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                    custom=True).Set(
+            f"Third-person view of rover_01. Static, world-space. "
+            f"{focal:.0f} mm equivalent. Both eye and target sit inside the "
+            f"3.2 m aisle, so nothing clips through racking.")
+        n_cam += 1
+    for name, *_ in ROVERS:
+        base = f"/World/Scenario/Fleet/{name}"
+        c = camera(f"{base}/ViewCameras/chase",
+                   CHASE_FOCAL, VIEW_HAP, VIEW_VAP, VIEW_CLIP)
+        set_xform(c.GetPrim(), CHASE_EYE,
+                  look_at_orient(CHASE_EYE, CHASE_TARGET))
+        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                    custom=True).Set(
+            "Chase view. Parented to the rover root, so it FOLLOWS the robot "
+            "as it drives. Rear-left 3/4, 3.2 m back.")
+        n_cam += 1
+
     # fixed ceiling cameras, one per aisle, looking straight down
     UsdGeom.Scope.Define(stage, "/World/Simulation")
     fx = UsdGeom.Scope.Define(stage, "/World/Simulation/FixedCameras")
@@ -287,7 +325,8 @@ def author_sensors():
     ffov = 2 * math.degrees(math.atan(FIXED_HAP / (2 * FIXED_FOCAL)))
     rhfov = 2 * math.degrees(math.atan(ROVER_HAP / (2 * ROVER_FOCAL)))
     rvfov = 2 * math.degrees(math.atan(ROVER_VAP / (2 * ROVER_FOCAL)))
-    return dict(cameras=n_cam, amr_hfov=round(hfov, 1), amr_vfov=round(vfov, 1),
+    return dict(cameras=n_cam, view_cams=len(VIEW_CAMS) + len(ROVERS),
+                amr_hfov=round(hfov, 1), amr_vfov=round(vfov, 1),
                 rover_pov_hfov=round(rhfov, 1), rover_pov_vfov=round(rvfov, 1),
                 fixed_hfov=round(ffov, 1), rtx_lidar="mount only, not authored",
                 imu="mount only, not authored")

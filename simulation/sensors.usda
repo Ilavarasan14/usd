@@ -157,12 +157,57 @@ def Xform "World"
                         }
                     }
                 }
+
+                def "ViewCameras"
+                {
+                    def Camera "chase"
+                    {
+                        float2 clippingRange = (0.1, 80)
+                        float focalLength = 35
+                        float horizontalAperture = 36
+                        custom string isaac:note = "Chase view. Parented to the rover root, so it FOLLOWS the robot as it drives. Rear-left 3/4, 3.2 m back."
+                        token projection = "perspective"
+                        float verticalAperture = 20.25
+                        quatd xformOp:orient = (0.7142725729900951, 0.501859944911204, -0.28043692529577435, -0.3991320810189089)
+                        double3 xformOp:translate = (-2.4, -1.6, 1.8)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+                    }
+                }
             }
         }
     }
 
     def Scope "Simulation"
     {
+        def Scope "ViewCameras"
+        {
+            def Camera "rover_aisle"
+            {
+                float2 clippingRange = (0.1, 80)
+                float focalLength = 35
+                float horizontalAperture = 36
+                custom string isaac:note = "Third-person view of rover_01. Static, world-space. 35 mm equivalent. Both eye and target sit inside the 3.2 m aisle, so nothing clips through racking."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (0.5749084791177166, 0.47972904396250665, 0.42466537298831714, 0.5089200389079475)
+                double3 xformOp:translate = (1, -1.1, 2.3)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "rover_closeup"
+            {
+                float2 clippingRange = (0.1, 80)
+                float focalLength = 50
+                float horizontalAperture = 36
+                custom string isaac:note = "Third-person view of rover_01. Static, world-space. 50 mm equivalent. Both eye and target sit inside the 3.2 m aisle, so nothing clips through racking."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (0.6606075194329784, 0.4859326368789148, 0.3390808122937143, 0.4609678735212971)
+                double3 xformOp:translate = (-4.6, -1.25, 1.75)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
         def Scope "FixedCameras"
         {
             def Camera "ceiling_00"

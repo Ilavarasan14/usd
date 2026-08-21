@@ -368,7 +368,52 @@ def check_scale(stage, assets, bbc):
     return fails
 
 
-# ---------------------------------------------------- 8. navigable clearance
+# ------------------------------------------------- 8. floor-marking winding
+def check_marking_normals(stage):
+    """Floor paint must face UP. A strip authored with reversed winding renders
+    black and is invisible to a downward-looking camera -- it looks like a
+    material bug but is a geometry bug. Checks the GEOMETRIC normal from the
+    points, so an authored normals attribute cannot mask a bad winding."""
+    scope = stage.GetPrimAtPath(
+        "/World/Environment/Infrastructure/FloorMarkings")
+    if not scope:
+        rec("SKIP", "marking_winding", "no FloorMarkings scope")
+        return 0
+    fails, checked = 0, 0
+    for prim in Usd.PrimRange(scope):
+        m = UsdGeom.Mesh(prim)
+        if not m:
+            continue
+        pts = m.GetPointsAttr().Get()
+        counts = m.GetFaceVertexCountsAttr().Get()
+        idx = m.GetFaceVertexIndicesAttr().Get()
+        if not pts or not counts:
+            continue
+        checked += 1
+        bad, o = 0, 0
+        for c in counts:
+            f = [Gf.Vec3d(pts[idx[o + k]]) for k in range(c)]
+            nrm = Gf.Vec3d(0, 0, 0)
+            for k in range(c):                       # Newell's method
+                a, b = f[k], f[(k + 1) % c]
+                nrm += Gf.Vec3d((a[1] - b[1]) * (a[2] + b[2]),
+                                (a[2] - b[2]) * (a[0] + b[0]),
+                                (a[0] - b[0]) * (a[1] + b[1]))
+            if nrm[2] <= 0:
+                bad += 1
+            o += c
+        if bad:
+            rec("FAIL", "marking_winding",
+                f"{prim.GetPath().name}: {bad}/{len(counts)} faces wind "
+                f"downward -- paint renders black and is invisible from above")
+            fails += 1
+    if fails == 0:
+        rec("PASS", "marking_winding",
+            f"{checked} floor-marking meshes, every face winds +Z")
+    return fails
+
+
+# ---------------------------------------------------- 9. navigable clearance
 def check_navigable(stage, assets, bbc):
     """The property that actually matters for an AMR scene: does every robot
     fit in the corridor it was placed in, and with how much margin?
@@ -430,6 +475,7 @@ def main():
     check_physics(stage)
     check_transforms(stage)
     check_scale(stage, assets, bbc)
+    check_marking_normals(stage)
     check_navigable(stage, assets, bbc)
 
     order = {"FAIL": 0, "WARN": 1, "SKIP": 2, "PASS": 3}

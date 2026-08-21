@@ -198,6 +198,13 @@ def set_xform(prim, translate=(0, 0, 0), orient=None, scale=None):
     return prim
 
 
+def look_at_orient(eye, target, up=(0, 0, 1)):
+    """Quatd aiming a USD camera (local -Z forward, +Y up) from eye at target.
+    SetLookAt builds a VIEW matrix, so the camera transform is its inverse."""
+    view = Gf.Matrix4d(1).SetLookAt(Gf.Vec3d(*eye), Gf.Vec3d(*target), Gf.Vec3d(*up))
+    return view.GetInverse().ExtractRotationQuat()
+
+
 def quat_from_axis_angle(axis, degrees):
     r = Gf.Rotation(Gf.Vec3d(*axis), degrees)
     q = r.GetQuat()
