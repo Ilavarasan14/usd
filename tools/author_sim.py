@@ -288,25 +288,11 @@ def author_sensors():
             "extension. Mount pose is final: (0, 0, 0.24) m, coincident with "
             "the chassis body origin.")
 
-    # ---- rover first-person view -------------------------------------
-    # Parented under tilt_head/camera_mount so the pan and tilt joints
-    # genuinely aim it -- driving joint_pan / joint_tilt moves the shot.
+    # ---- rover sensors -------------------------------------------------
     for name, *_ in ROVERS:
         base = f"/World/Scenario/Fleet/{name}"
         stage.OverridePrim(base)
-        stage.OverridePrim(base + "/tilt_head")
-        stage.OverridePrim(base + "/tilt_head/camera_mount")
-        c = camera(base + "/tilt_head/camera_mount/pov",
-                   ROVER_FOCAL, ROVER_HAP, ROVER_VAP, ROVER_CLIP)
-        set_xform(c.GetPrim())      # inherits the mount pose exactly
-        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
-                                    custom=True).Set(
-            "Rover first-person view. Select this prim as the active viewport "
-            "camera, or bind it to a Replicator render product. Aimed by "
-            "joint_pan (Z, +/-175 deg) and joint_tilt (Y, +/-45 deg).")
-        n_cam += 1
 
-        # Rover sensors: lidar, barcode scanner, IMU, rear proximity
         stage.OverridePrim(base + "/Sensors")
         rlm = stage.OverridePrim(base + "/Sensors/lidar_mount")
         rlidar = stage.DefinePrim(base + "/Sensors/lidar_mount/obstacle_lidar",
@@ -326,8 +312,7 @@ def author_sensors():
         scanner.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
                                           custom=True).Set(
             "Barcode scanner camera. Short-range (0.05-2 m), aimed 15 deg down "
-            "from the rover mast at 0.90 m. Bind to a Replicator render product "
-            "and feed the output to a barcode-decode action graph node.")
+            "at 0.45 m height. Bind to a Replicator render product.")
         n_cam += 1
 
         rim = stage.OverridePrim(base + "/Sensors/imu_mount")
