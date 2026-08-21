@@ -249,18 +249,28 @@ def build_schedule():
                 sch.dwell(SENSE_PAUSE, "sense")
                 sch.turn_to(leg[1])
             else:
-                # Before every drive: pause to sense ahead for obstacles
+                # Break long legs into SCAN_SPACING chunks, sensing before each
                 nx, ny = leg
+                total = math.hypot(nx - sch.x, ny - sch.y)
+                if total < 0.1:
+                    continue
                 hdg_to_target = math.degrees(math.atan2(ny - sch.y, nx - sch.x))
-                dist_to_target = math.hypot(nx - sch.x, ny - sch.y)
-                if dist_to_target > 0.1:
+                n_chunks = max(1, int(math.ceil(total / SCAN_SPACING)))
+                dx = (nx - sch.x) / n_chunks
+                dy = (ny - sch.y) / n_chunks
+                for ci in range(n_chunks):
+                    cx = sch.x + dx
+                    cy = sch.y + dy
+                    chunk_hdg = math.degrees(math.atan2(cy - sch.y, cx - sch.x))
+                    chunk_dist = math.hypot(cx - sch.x, cy - sch.y)
+                    # Sense ahead before every chunk
                     sch.dwell(SENSE_PAUSE, "sense")
-                    if _blocked_ahead(sch.x, sch.y, hdg_to_target,
-                                      min(SENSE_RANGE, dist_to_target)):
-                        new_hdg = _choose_turn(sch.x, sch.y, hdg_to_target)
+                    if _blocked_ahead(sch.x, sch.y, chunk_hdg,
+                                      min(SENSE_RANGE, chunk_dist + 1.0)):
+                        new_hdg = _choose_turn(sch.x, sch.y, chunk_hdg)
                         sch.turn_to(new_hdg)
                         sch.dwell(SENSE_PAUSE, "sense")
-                sch.drive_to(nx, ny)
+                    sch.drive_to(cx, cy)
         phases.append((name, t0, sch.t, sch.distance - d0))
     return sch, phases
 

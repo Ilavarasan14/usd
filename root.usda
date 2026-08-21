@@ -4,7 +4,7 @@
              Composition only -- this layer defines no prims.
              Bay extent 60 x 24 m, clear height 10.5 m. Z-up, meters, kilograms.
              Time range covers rover_01's mission: 5 named paths, 331.5 m,
-             3586.4 s @ 60 fps, including a pick-and-place transfer.
+             3883.7 s @ 60 fps, including a pick-and-place transfer.
              Authored as kinematic time samples in scenario/timeline.usda."""
 
     defaultPrim = "World"
@@ -13,7 +13,7 @@
     upAxis = "Z"
     timeCodesPerSecond = 60
     startTimeCode = 0
-    endTimeCode = 215185
+    endTimeCode = 233022
 
     subLayers = [
         @./safety/overrides.usda@,                  # STRONGEST -- corrections win over everything
