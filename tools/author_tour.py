@@ -124,8 +124,6 @@ PATHS = [
                       + _reactive_aisle_sweep(A3, X_CROSS, X_EAST)
                       + _reactive_aisle_sweep(A3, X_CROSS, X_WEST)
                       + [(X_CROSS, A3), (X_CROSS, A2)]),
-    ("pickup_run",    [(X_WEST, A2), (PICK_X, A2), "PICK"]),
-    ("transport",     [(X_CROSS, A2), (X_CROSS, A1), (DROP_X, A1), "PLACE"]),
 ]
 START = (-8.0, A2)
 
@@ -234,11 +232,7 @@ def build_schedule():
     for name, legs in PATHS:
         t0, d0 = sch.t, sch.distance
         for leg in legs:
-            if leg == "PICK":
-                sch.dwell(TRANSFER_SECONDS, "pick")
-            elif leg == "PLACE":
-                sch.dwell(TRANSFER_SECONDS, "place")
-            elif leg == "SCAN":
+            if leg == "SCAN":
                 orig = sch.hdg
                 sch.turn_to(_wrap180(orig + 90.0))
                 sch.dwell(SCAN_DWELL, "scan")
@@ -279,13 +273,11 @@ def author_timeline():
     sch, phases = build_schedule()
     duration = sch.t
     end_tc = math.ceil(duration * FPS)
-    pick = next(e for e in sch.events if e[0] == "pick")
-    place = next(e for e in sch.events if e[0] == "place")
 
     stage = new_layer(
         "scenario/timeline.usda",
         f"rover_01 mission: {len(PATHS)} named paths, {sch.distance:.1f} m, "
-        f"{duration:.1f} s, with a pick-and-place transfer.\n\n"
+        f"{duration:.1f} s, barcode-scanning patrol only.\n\n"
         f"Cruise {SPEED_NORMAL} m/s ({SPEED_CROSS} m/s in the cross-aisle), "
         f"accel {ACCEL} m/s^2, turns {TURN_RATE} deg/s. Velocity is profiled "
         f"(forward/backward pass) so there are no instantaneous speed steps -- "
@@ -295,9 +287,7 @@ def author_timeline():
         "with the articulation active and PhysX drives the robot, ignoring "
         "this. Use this layer for SDG capture, flythroughs and deterministic "
         "replay. To drive the same route under physics, feed "
-        "scenario/routes.usda to a controller and mute this layer. "
-        "tote_payload is authored KINEMATIC so its scripted motion is "
-        "authoritative while it still collides.")
+        "scenario/routes.usda to a controller and mute this layer.")
     UsdGeom.Xform.Define(stage, "/World")
     UsdGeom.Scope.Define(stage, "/World/Scenario")
 
@@ -321,21 +311,6 @@ def author_timeline():
         wx.SetXformOpOrder([wt, wo])
         wheels[nm] = wo
 
-    tote = stage.OverridePrim("/World/Scenario/Staged/tote_payload")
-    tx = UsdGeom.Xformable(tote)
-    tx.ClearXformOpOrder()
-    tt_op = tx.AddTranslateOp(UsdGeom.XformOp.PrecisionDouble)
-    to_op = tx.AddOrientOp(UsdGeom.XformOp.PrecisionDouble)
-    tx.SetXformOpOrder([tt_op, to_op])
-
-    pick_pos = Gf.Vec3d(PICK_X, PICK_Y, floor_z(PICK_X, PICK_Y) + STATION_DECK_Z)
-    drop_pos = Gf.Vec3d(DROP_X, DROP_Y, floor_z(DROP_X, DROP_Y) + STATION_DECK_Z)
-
-    def deck_pose(x, y, hdg):
-        """Tote riding the rover deck: same yaw, 0.47 m above the ground plane."""
-        return Gf.Vec3d(x, y, floor_z(x, y) + ROVER_DECK_Z), \
-            quat_from_axis_angle((0, 0, 1), hdg)
-
     for (t, x, y, hdg, wl, wr) in sch.keys:
         tc = t * FPS
         t_op.Set(Gf.Vec3d(x, y, floor_z(x, y)), tc)
@@ -343,31 +318,6 @@ def author_timeline():
         for nm, op in wheels.items():
             op.Set(quat_from_axis_angle(
                 (0, 1, 0), math.degrees(wl if nm.endswith("l") else wr)), tc)
-        # --- payload state machine
-        if t <= pick[1]:
-            tt_op.Set(pick_pos, tc)
-            to_op.Set(Gf.Quatd(1, 0, 0, 0), tc)
-        elif t >= place[2]:
-            tt_op.Set(drop_pos, tc)
-            to_op.Set(Gf.Quatd(1, 0, 0, 0), tc)
-        else:
-            p, q = deck_pose(x, y, hdg)
-            tt_op.Set(p, tc)
-            to_op.Set(q, tc)
-
-    # --- roller transfers: interpolate across the dwell so the tote slides
-    #     between station deck and rover deck instead of teleporting
-    for kind, t0, t1 in (pick, place):
-        on_deck, _ = deck_pose(PICK_X if kind == "pick" else DROP_X,
-                               A2 if kind == "pick" else A1,
-                               0.0 if kind == "pick" else 0.0)
-        a, b = (pick_pos, on_deck) if kind == "pick" else (on_deck, drop_pos)
-        steps = 24
-        for i in range(steps + 1):
-            u = i / steps
-            tc = (t0 + (t1 - t0) * u) * FPS
-            tt_op.Set(a + (b - a) * u, tc)
-            to_op.Set(Gf.Quatd(1, 0, 0, 0), tc)
 
     tl = UsdGeom.Scope.Define(stage, "/World/Scenario/Timeline").GetPrim()
     tl.CreateAttribute("mission:durationSeconds", Sdf.ValueTypeNames.Double,
@@ -377,13 +327,8 @@ def author_timeline():
     tl.CreateAttribute("mission:paths", Sdf.ValueTypeNames.StringArray,
                        custom=True).Set(
         [f"{n}: t {a/1:.1f}..{b:.1f}s, {d:.1f} m" for n, a, b, d in phases])
-    tl.CreateAttribute("mission:pickSeconds", Sdf.ValueTypeNames.Double2,
-                       custom=True).Set(Gf.Vec2d(pick[1], pick[2]))
-    tl.CreateAttribute("mission:placeSeconds", Sdf.ValueTypeNames.Double2,
-                       custom=True).Set(Gf.Vec2d(place[1], place[2]))
     stage.GetRootLayer().Save()
     return dict(paths=len(PATHS), distance_m=round(sch.distance, 1),
                 duration_s=round(duration, 1), keyframes=len(sch.keys),
                 end_time_code=end_tc,
-                pick_at_s=round(pick[1], 1), place_at_s=round(place[1], 1),
                 phases=[(n, round(b - a, 1)) for n, a, b, _ in phases])
