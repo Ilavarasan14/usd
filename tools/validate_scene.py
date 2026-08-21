@@ -136,14 +136,20 @@ def placed_assets(stage):
                 k = "tote" if c.GetName().startswith("tote") else "pallet"
             elif cls == "amr" and c.GetName().startswith("rover"):
                 k = "rover"
+            if c.GetName() == "tote_payload":
+                k = "payload"
             out.append((c, k))
     return out
 
 
 def expected_support_z(prim, kind, cx, cy):
-    """Height the object should be resting on. Totes sit on a pallet deck."""
+    """Height the object should be resting on. Totes sit on a pallet deck; the
+    payload tote starts on a transfer station deck, not on a pallet."""
+    from wh_common import STATION_DECK_Z
     if kind == "tote":
         return floor_z(cx, cy) + PALLET_H
+    if kind == "payload":
+        return floor_z(cx, cy) + STATION_DECK_Z
     return floor_z(cx, cy)
 
 
@@ -368,6 +374,7 @@ CLASS_BOUNDS = {   # (dx, dy, dz) plausible min/max per placed class, metres
     "rover":   ((0.5, 0.4, 0.8),  (1.2, 1.0, 1.6)),
     "pallet":  ((0.7, 0.7, 0.10), (1.4, 1.4, 1.9)),
     "tote":    ((0.3, 0.3, 0.20), (0.8, 0.8, 0.6)),
+    "payload": ((0.3, 0.3, 0.20), (0.8, 0.8, 0.6)),
     "bollard": ((0.10, 0.10, 0.6), (0.4, 0.4, 1.5)),
 }
 
@@ -462,7 +469,7 @@ def check_tour(stage, bbc):
         return 0
 
     t0, t1 = min(samples), max(samples)
-    step = 30.0                       # 0.5 s at 60 fps
+    step = 60.0                       # 1 s at 60 fps
     fails, worst_gap, worst_at = 0, 1e9, None
     max_cross_speed, prev = 0.0, None
     n = 0
@@ -511,7 +518,128 @@ def check_tour(stage, bbc):
     return fails
 
 
-# --------------------------------------------------- 10. view camera framing
+# ------------------------------------------------------- 10. payload transfer
+def check_payload(stage, bbc):
+    """The pick-and-place must never leave the tote unsupported. At every
+    sampled time its underside has to coincide with one of exactly three
+    surfaces: the pick station deck, the rover deck, or the drop station deck."""
+    from wh_common import (PICK_STATION, DROP_STATION, STATION_DECK_Z,
+                           ROVER_DECK_Z)
+    tote = stage.GetPrimAtPath("/World/Scenario/Staged/tote_payload")
+    rover = stage.GetPrimAtPath("/World/Scenario/Fleet/rover_01")
+    if not tote or not rover:
+        rec("SKIP", "payload", "no tote_payload / rover_01")
+        return 0
+    op = tote.GetAttribute("xformOp:translate")
+    ts = op.GetTimeSamples() if op else []
+    if not ts:
+        rec("SKIP", "payload", "tote_payload is not animated")
+        return 0
+    px, py = PICK_STATION
+    dx, dy = DROP_STATION
+    decks = [floor_z(px, py) + STATION_DECK_Z, floor_z(dx, dy) + STATION_DECK_Z]
+
+    t0, t1 = min(ts), max(ts)
+    fails, worst, worst_at, carried = 0, 0.0, None, 0
+    tc, n = t0, 0
+    while tc <= t1:
+        bbc.SetTime(Usd.TimeCode(tc))
+        tb = bbc.ComputeWorldBound(tote).ComputeAlignedRange()
+        rb = bbc.ComputeWorldBound(rover).ComputeAlignedRange()
+        if tb.IsEmpty():
+            tc += 60.0
+            continue
+        n += 1
+        base = tb.GetMin()[2]
+        # rover ORIGIN, not bbox min: BBoxCache inflates the bbox by up to
+        # r*(sqrt(2)-1) while the wheel cylinders spin, which would show up as
+        # a phantom 60 mm error in the carry phase.
+        rz = UsdGeom.Xformable(rover).ComputeLocalToWorldTransform(
+            Usd.TimeCode(tc)).ExtractTranslation()[2]
+        cands = list(decks) + [rz + ROVER_DECK_Z]
+        err = min(abs(base - c) for c in cands)
+        # is it riding the robot? centre must sit within the rover footprint
+        cx = (tb.GetMin()[0] + tb.GetMax()[0]) / 2
+        cy = (tb.GetMin()[1] + tb.GetMax()[1]) / 2
+        on_rover = (rb.GetMin()[0] <= cx <= rb.GetMax()[0] and
+                    rb.GetMin()[1] <= cy <= rb.GetMax()[1])
+        if on_rover:
+            carried += 1
+        if err > worst:
+            worst, worst_at = err, tc / 60.0
+        if err > 0.02:
+            rec("FAIL", "payload",
+                f"t={tc/60:.1f}s tote underside {base:.3f} m matches no support "
+                f"surface (nearest off by {err*1000:.0f} mm)")
+            fails += 1
+        hit, _ = rack_clearance(tb.GetMin(), tb.GetMax())
+        if hit:
+            rec("FAIL", "payload", f"t={tc/60:.1f}s tote is inside racking")
+            fails += 1
+        tc += 60.0
+    if carried == 0:
+        rec("FAIL", "payload", "tote never rides the rover -- no transport occurs")
+        fails += 1
+    if fails == 0:
+        rec("PASS", "payload",
+            f"{n} samples: tote always on a support surface (worst gap "
+            f"{worst*1000:.1f} mm at t={worst_at:.1f}s), carried on the rover "
+            f"for {carried} of them, never inside racking")
+    return fails
+
+
+# ---------------------------------------------------- 11. chase camera motion
+def check_chase_speed(stage):
+    """The chase camera is rigidly parented, so it tracks the rover exactly
+    while driving. The one place it can outrun the robot is an in-place turn,
+    where it swings at omega x boom radius. Measures both and reports the ratio."""
+    from author_tour import SPEED_NORMAL
+    cam = stage.GetPrimAtPath(
+        "/World/Scenario/Fleet/rover_01/ViewCameras/chase")
+    rover = stage.GetPrimAtPath("/World/Scenario/Fleet/rover_01")
+    if not cam or not rover:
+        rec("SKIP", "chase_speed", "no chase camera")
+        return 0
+    op = rover.GetAttribute("xformOp:translate")
+    ts = op.GetTimeSamples() if op else []
+    if not ts:
+        rec("SKIP", "chase_speed", "rover is not animated")
+        return 0
+    t0, t1 = min(ts), max(ts)
+    step = 6.0                                  # 0.1 s -- fine enough to see jerk
+    pc = pr = None
+    vmax_c = vmax_r = 0.0
+    amax = 0.0
+    prev_v = None
+    tc = t0
+    while tc <= t1:
+        mc = UsdGeom.Xformable(cam).ComputeLocalToWorldTransform(Usd.TimeCode(tc))
+        mr = UsdGeom.Xformable(rover).ComputeLocalToWorldTransform(Usd.TimeCode(tc))
+        c, r = mc.ExtractTranslation(), mr.ExtractTranslation()
+        if pc is not None:
+            dt = step / 60.0
+            vc = (c - pc).GetLength() / dt
+            vr = (r - pr).GetLength() / dt
+            vmax_c, vmax_r = max(vmax_c, vc), max(vmax_r, vr)
+            if prev_v is not None:
+                amax = max(amax, abs(vc - prev_v) / dt)
+            prev_v = vc
+        pc, pr = c, r
+        tc += step
+    ratio = vmax_c / vmax_r if vmax_r > 1e-6 else float("inf")
+    if ratio > 2.0:
+        rec("FAIL", "chase_speed",
+            f"chase camera peaks at {vmax_c:.2f} m/s vs rover {vmax_r:.2f} m/s "
+            f"({ratio:.1f}x) -- the shot whips away from the robot")
+        return 1
+    rec("PASS", "chase_speed",
+        f"rover peak {vmax_r:.2f} m/s (cruise {SPEED_NORMAL}), chase camera peak "
+        f"{vmax_c:.2f} m/s ({ratio:.2f}x, the boom swinging through turns), "
+        f"peak camera accel {amax:.2f} m/s^2")
+    return 0
+
+
+# --------------------------------------------------- 12. view camera framing
 def check_view_cameras(stage, bbc):
     """A view camera parked inside a rack renders a wall of pallet. Checks that
     every view camera's eye point sits in free space -- and for the chase
@@ -616,6 +744,8 @@ def main():
     check_navigable(stage, assets, bbc)
     check_tour(stage, bbc)
     check_view_cameras(stage, bbc)
+    check_payload(stage, bbc)
+    check_chase_speed(stage)
 
     order = {"FAIL": 0, "WARN": 1, "SKIP": 2, "PASS": 3}
     RESULTS.sort(key=lambda r: order[r[0]])

@@ -79,6 +79,15 @@ ROVER_PAN_MASS, ROVER_TILT_MASS = 1.5, 2.0
 ROVER_TILT_LIMITS = (-45.0, 45.0)             # degrees
 ROVER_PAN_LIMITS = (-175.0, 175.0)
 
+# Side-transfer stations. Deck height matches the rover deck exactly so a tote
+# rolls straight across; this rover has no arm, which is how real tote AMRs
+# work -- a powered-roller station pushes the load on and off.
+STATION_DECK_Z = ROVER_CLEARANCE + ROVER_BODY_H + 0.02   # 0.47 m, = rover deck
+STATION_L, STATION_W = 0.90, 0.50
+PICK_STATION = (-22.0, 1.05)      # aisle 2, north side
+DROP_STATION = (18.0, -4.85)      # aisle 1, north side
+ROVER_DECK_Z = STATION_DECK_Z
+
 DOCK_DOOR_W, DOCK_DOOR_H = 2.75, 3.00
 HUMAN_REF = 1.70                              # 1.7 m human, sanity reference
 

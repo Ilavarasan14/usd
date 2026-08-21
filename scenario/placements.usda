@@ -197,6 +197,18 @@ def Xform "World" (
                 double3 xformOp:translate = (-28.35, 5.9, 0.22968069746605516)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
             }
+
+            def Xform "tote_payload" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                prepend references = @../assets/props/tote/tote.usda@
+            )
+            {
+                bool physics:kinematicEnabled = 1
+                float physics:mass = 8
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:translate = (-22, 1.05, 0.5341863568506201)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
         }
     }
 }

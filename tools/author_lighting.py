@@ -134,18 +134,24 @@ def author_artificial():
         "shadow the working plane). ~5000 K. NOTE: Kit's UsdLux intensity is "
         "not photometric by default, so these values are tuned for "
         "sensor-plausible exposure, not asserted as lumen-accurate. They have "
-        "NOT been render-verified -- no RTX renderer is available offline.")
+        "NOT been render-verified -- no RTX renderer is available offline.\n\n"
+        "Coverage is now whole-floor: aisles, cross-aisle, both perimeter "
+        "walkways, the rack-run flues, the dock apron, the charger bank and "
+        "both transfer stations. NOTE for previews: Hydra Storm caps at 16 "
+        "lights, so a Storm render samples an arbitrary subset and tells you "
+        "nothing about the real distribution.")
     UsdGeom.Xform.Define(stage, "/World")
     UsdGeom.Scope.Define(stage, "/World/Lighting")
     grp = UsdGeom.Scope.Define(stage, "/World/Lighting/HighBay")
 
     n = 0
-    def fixture(path, x, y, yaw):
+
+    def fixture(path, x, y, yaw, w=1.2, h=0.3, inten=1800.0):
         nonlocal n
         r = UsdLux.RectLight.Define(stage, path)
-        r.CreateWidthAttr(1.2)
-        r.CreateHeightAttr(0.3)
-        r.CreateIntensityAttr(1800.0)
+        r.CreateWidthAttr(w)
+        r.CreateHeightAttr(h)
+        r.CreateIntensityAttr(inten)
         r.CreateExposureAttr(0.0)
         r.CreateColorAttr(Gf.Vec3f(1.0, 0.97, 0.94))     # ~5000 K
         r.CreateNormalizeAttr(True)
@@ -154,17 +160,43 @@ def author_artificial():
                   quat_from_axis_angle((0, 0, 1), yaw))
         n += 1
 
+    # Aisles: 14 fixtures each on ~4 m centres (was 10 on 6 m -- the gaps showed
+    # up as dark bands on the working plane between fixtures).
     for i, ay in enumerate(AISLE_Y):
-        for k in range(10):
-            x = -27.0 + 54.0 * k / 9.0
+        for k in range(14):
+            x = -27.0 + 54.0 * k / 13.0
             fixture(f"/World/Lighting/HighBay/aisle_{i}_{k:02d}", x, ay, 0.0)
-    for k in range(4):
-        y = -9.0 + 18.0 * k / 3.0
+
+    # Cross-aisle, running the full bay depth.
+    for k in range(6):
+        y = -10.0 + 20.0 * k / 5.0
         fixture(f"/World/Lighting/HighBay/cross_{k:02d}", 0.0, y, 90.0)
 
-    # dock apron task lighting, aimed down at the door thresholds
+    # Perimeter walkways -- previously unlit entirely.
+    for s_i, wy in ((0, -11.1), (1, 11.1)):
+        for k in range(12):
+            x = -27.0 + 54.0 * k / 11.0
+            fixture(f"/World/Lighting/HighBay/walkway_{s_i}_{k:02d}", x, wy, 0.0)
+
+    # Rack-run flue lighting: narrow fixtures down the 0.30 m back-to-back gap,
+    # so the rack faces are lit from above instead of only from the aisle.
+    for r_i, ry in enumerate(RACK_RUN_Y):
+        for k in range(7):
+            x = -25.0 + 50.0 * k / 6.0
+            fixture(f"/World/Lighting/HighBay/flue_{r_i}_{k:02d}", x, ry, 0.0,
+                    w=0.9, h=0.15, inten=900.0)
+
+    # Dock apron task lighting, aimed down at the door thresholds.
     for j, dy in enumerate([-6.75, -2.25, 2.25, 6.75]):
         fixture(f"/World/Lighting/HighBay/dock_{j:02d}", 27.5, dy, 90.0)
+
+    # Charger bank and the two transfer stations.
+    for j, cy in enumerate([-2.4, 0.0, 2.4]):
+        fixture(f"/World/Lighting/HighBay/charge_{j:02d}", -28.6, cy, 90.0,
+                w=0.9, h=0.25, inten=1200.0)
+    for j, (sx, sy) in enumerate((PICK_STATION, DROP_STATION)):
+        fixture(f"/World/Lighting/HighBay/station_{j:02d}", sx, sy, 0.0,
+                w=0.9, h=0.25, inten=1400.0)
 
     stage.GetRootLayer().Save()
     return dict(fixtures=n, mount_height_m=FIXTURE_Z, cct_k=5000,

@@ -76,8 +76,21 @@ def author_placements():
             UsdPhysics.MassAPI.Apply(p).CreateMassAttr().Set(TOTE_MASS)
             n_tote += 1
 
+    # ---- payload tote, parked on the pick station ------------------------
+    # KINEMATIC, not dynamic: its motion is authored in scenario/timeline.usda,
+    # and a kinematic body follows its authored transform while still colliding
+    # with the world. A dynamic body would fight the animation.
+    px, py = PICK_STATION
+    p = UsdGeom.Xform.Define(stage, "/World/Scenario/Staged/tote_payload").GetPrim()
+    p.GetReferences().AddReference("../assets/props/tote/tote.usda")
+    set_xform(p, (px, py, floor_z(px, py) + STATION_DECK_Z),
+              quat_from_axis_angle((0, 0, 1), 0.0))
+    rb = UsdPhysics.RigidBodyAPI.Apply(p)
+    rb.CreateKinematicEnabledAttr().Set(True)
+    UsdPhysics.MassAPI.Apply(p).CreateMassAttr().Set(TOTE_MASS)
+
     stage.GetRootLayer().Save()
-    return dict(fleet=len(FLEET), rovers=len(ROVERS),
+    return dict(fleet=len(FLEET), rovers=len(ROVERS), payload_totes=1,
                 staged_pallets=len(STAGED_PALLET_Y),
                 totes=n_tote,
                 dynamic_bodies=len(STAGED_PALLET_Y) + n_tote,

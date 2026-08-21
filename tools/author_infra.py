@@ -120,6 +120,22 @@ def author_infrastructure():
             n_mk += 1
     stats["floor_markings"] = n_mk
 
+    # ---- side-transfer stations ------------------------------------------
+    st_boxes = []
+    for (sx, sy) in (PICK_STATION, DROP_STATION):
+        z0 = floor_z(sx, sy)
+        top = STATION_DECK_Z - 0.04
+        st_boxes.append((STATION_L, STATION_W, 0.04,
+                         (sx, sy, z0 + STATION_DECK_Z - 0.02)))     # roller deck
+        for lx in (-STATION_L / 2 + 0.06, STATION_L / 2 - 0.06):
+            for ly in (-STATION_W / 2 + 0.06, STATION_W / 2 - 0.06):
+                st_boxes.append((0.06, 0.06, top, (sx + lx, sy + ly, z0 + top / 2)))
+    st = merge_meshes(stage, "/World/Environment/Infrastructure/transfer_stations",
+                      st_boxes)
+    set_xform(st.GetPrim())
+    make_static_collider(st.GetPrim(), "none")
+    stats["transfer_stations"] = 2
+
     # ---- racked inventory -------------------------------------------------
     rng = random.Random(SEED)
     slots = pallet_slots()
