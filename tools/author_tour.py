@@ -26,12 +26,12 @@ X_EAST, X_WEST, X_CROSS = 25.8, -27.35, 0.0
 PICK_X, PICK_Y = PICK_STATION
 DROP_X, DROP_Y = DROP_STATION
 
-# "Slowly": cruise cut from 1.2 to 0.5 m/s, turns from 60 to 30 deg/s.
-SPEED_NORMAL = 0.50            # m/s
-SPEED_CROSS = 0.25             # m/s inside |x| <= 2.25 (safety/constraints)
-ACCEL = 0.25                   # m/s^2
-TURN_RATE = 30.0               # deg/s
-TURN_ACCEL = 30.0              # deg/s^2
+# Inspection pace: slow enough for barcode capture and stable chase footage.
+SPEED_NORMAL = 0.30            # m/s
+SPEED_CROSS = 0.15             # m/s inside |x| <= 2.25 (safety/constraints)
+ACCEL = 0.15                   # m/s^2
+TURN_RATE = 20.0               # deg/s
+TURN_ACCEL = 20.0              # deg/s^2
 CROSS_HALF_WIDTH = 2.25
 TRANSFER_SECONDS = 6.0         # roller transfer dwell at a station
 FPS = 60.0
@@ -39,13 +39,13 @@ DT_STRAIGHT, DT_TURN = 0.5, 0.2
 
 # Rover deck stop poses: alongside each station, on the aisle centreline.
 PATHS = [
+    ("patrol_south",  [(X_CROSS, A2), (X_CROSS, A1), (X_EAST, A1),
+                       (X_CROSS, A1), (X_CROSS, A2)]),
     ("patrol_centre", [(X_EAST, A2), (X_CROSS, A2)]),
     ("patrol_north",  [(X_CROSS, WALK_N), (X_WEST, WALK_N), (X_WEST, A3),
                        (X_EAST, A3), (X_WEST, A3)]),
     ("pickup_run",    [(X_WEST, A2), (PICK_X, A2), "PICK"]),
     ("transport",     [(X_CROSS, A2), (X_CROSS, A1), (DROP_X, A1), "PLACE"]),
-    ("patrol_south",  [(X_EAST, A1), (X_CROSS, A1), (X_CROSS, WALK_S),
-                       (X_WEST, WALK_S), (X_WEST, A2), (-8.0, A2)]),
 ]
 START = (-8.0, A2)
 

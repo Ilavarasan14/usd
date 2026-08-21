@@ -263,6 +263,62 @@ def Xform "World"
             }
         }
 
+        def Material "barcode_white"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/barcode_white/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/barcode_white/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/barcode_white/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/barcode_white/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.96, 0.96, 0.92)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.5
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.96, 0.96, 0.92)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "barcode_black"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/barcode_black/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/barcode_black/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/barcode_black/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/barcode_black/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.01, 0.01, 0.01)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.6
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.01, 0.01, 0.01)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
+
         def Material "amr_shell"
         {
             token outputs:mdl:displacement.connect = </World/Looks/amr_shell/mdl_shader.outputs:out>
@@ -671,6 +727,108 @@ def Xform "World"
                 rel material:binding = </World/Looks/tote_plastic> (
                     bindMaterialAs = "weakerThanDescendants"
                 )
+
+                over "barcode"
+                {
+                    over "backing" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_white> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_00" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_01" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_02" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_03" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_04" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_05" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_06" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_07" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_08" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_09" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
             }
 
             over "tote_01" (
@@ -680,6 +838,108 @@ def Xform "World"
                 rel material:binding = </World/Looks/tote_plastic> (
                     bindMaterialAs = "weakerThanDescendants"
                 )
+
+                over "barcode"
+                {
+                    over "backing" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_white> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_00" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_01" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_02" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_03" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_04" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_05" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_06" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_07" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_08" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_09" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
             }
 
             over "tote_02" (
@@ -689,6 +949,108 @@ def Xform "World"
                 rel material:binding = </World/Looks/tote_plastic> (
                     bindMaterialAs = "weakerThanDescendants"
                 )
+
+                over "barcode"
+                {
+                    over "backing" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_white> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_00" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_01" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_02" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_03" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_04" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_05" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_06" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_07" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_08" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_09" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
             }
 
             over "tote_03" (
@@ -698,6 +1060,219 @@ def Xform "World"
                 rel material:binding = </World/Looks/tote_plastic> (
                     bindMaterialAs = "weakerThanDescendants"
                 )
+
+                over "barcode"
+                {
+                    over "backing" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_white> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_00" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_01" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_02" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_03" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_04" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_05" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_06" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_07" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_08" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_09" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
+            }
+
+            over "tote_payload" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/tote_plastic> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+
+                over "barcode"
+                {
+                    over "backing" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_white> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_00" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_01" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_02" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_03" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_04" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_05" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_06" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_07" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_08" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "bar_09" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/barcode_black> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+                }
             }
         }
 

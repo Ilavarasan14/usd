@@ -106,6 +106,8 @@ VIS_MATERIALS = {
     "pallet_wood":        ((0.58, 0.44, 0.28), 0.80, 0.0),
     "carton_tan":         ((0.72, 0.60, 0.44), 0.85, 0.0),
     "tote_plastic":       ((0.15, 0.30, 0.55), 0.35, 0.0),
+    "barcode_white":      ((0.96, 0.96, 0.92), 0.50, 0.0),
+    "barcode_black":      ((0.01, 0.01, 0.01), 0.60, 0.0),
     "amr_shell":          ((0.18, 0.19, 0.21), 0.40, 0.2),
     "amr_rubber":         ((0.05, 0.05, 0.05), 0.85, 0.0),
     "dock_door_steel":    ((0.66, 0.67, 0.69), 0.50, 0.7),
@@ -169,6 +171,15 @@ def author_materials():
         bind(f"/World/Scenario/Staged/pallet_{i:02d}", "pallet_wood")
     for i in range(4):
         bind(f"/World/Scenario/Staged/tote_{i:02d}", "tote_plastic")
+        bind(f"/World/Scenario/Staged/tote_{i:02d}/barcode/backing", "barcode_white")
+        for bar in range(10):
+            bind(f"/World/Scenario/Staged/tote_{i:02d}/barcode/bar_{bar:02d}",
+                 "barcode_black")
+    bind("/World/Scenario/Staged/tote_payload", "tote_plastic")
+    bind("/World/Scenario/Staged/tote_payload/barcode/backing", "barcode_white")
+    for bar in range(10):
+        bind(f"/World/Scenario/Staged/tote_payload/barcode/bar_{bar:02d}",
+             "barcode_black")
     for name, *_ in FLEET:
         base = f"/World/Scenario/Fleet/{name}"
         bind(base + "/chassis", "amr_shell")
@@ -215,15 +226,9 @@ VIEW_CAMS = [
     ("rover_aisle",    (1.00, -1.10, 2.30), (-8.00, 0.00, 0.65), 35.0),
     ("rover_closeup",  (-4.60, -1.25, 1.75), (-8.00, 0.00, 0.62), 50.0),
 ]
-# Chase camera rides the rover root, so it follows the robot as it drives.
-# Chase boom RADIUS is the binding constraint, not lateral offset. The camera is
-# rigidly parented, so during an in-place 180 deg turn it sweeps a circle of that
-# radius around the rover. The east-end turns happen deep inside a rack segment
-# where the aisle is only 3.2 m wide, so the boom must stay under 1.6 m or the
-# camera swings into the racking mid-turn. sqrt(1.20^2 + 0.35^2) = 1.25 m leaves
-# 0.35 m of margin. A short boom needs a wide lens, hence 24 mm.
-CHASE_EYE, CHASE_TARGET, CHASE_FOCAL = (-1.20, -0.35, 1.85), (0.20, 0.0, 0.70), 24.0
-# Overhead follow: zero boom radius, so it is free everywhere by construction.
+    # Chase camera rides the rover root, so it follows the robot as it drives.
+    # Keep the boom short enough to remain inside the aisle during turns.
+CHASE_EYE, CHASE_TARGET, CHASE_FOCAL = (-0.70, -0.20, 1.45), (0.15, 0.0, 0.68), 24.0
 # The clearest way to actually watch a patrol.
 CHASE_TOP_EYE, CHASE_TOP_FOCAL = (0.0, 0.0, 6.0), 35.0
 

@@ -168,8 +168,8 @@ def Xform "World"
                         custom string isaac:note = "Chase view. Parented to the rover root, so it FOLLOWS the robot. Rear-left 3/4 on a 1.25 m boom -- short enough to stay clear of racking while the rover turns in place."
                         token projection = "perspective"
                         float verticalAperture = 20.25
-                        quatd xformOp:orient = (0.7100888911353935, 0.3421134010884018, -0.2671140718845947, -0.5544206526483884)
-                        double3 xformOp:translate = (-1.2, -0.35, 1.85)
+                        quatd xformOp:orient = (0.7144775121187624, 0.3225547264253886, -0.2554680715366974, -0.5658766628537947)
+                        double3 xformOp:translate = (-0.7, -0.2, 1.45)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
                     }
 

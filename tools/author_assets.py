@@ -101,6 +101,20 @@ def author_tote():
     m = merge_meshes(stage, "/tote/shell", boxes)
     set_xform(m.GetPrim())
     add_semantics(m.GetPrim(), "tote")
+
+    barcode = define_box_mesh(stage, "/tote/barcode/backing", 0.30, 0.006, 0.16,
+                              center=(0.0, -TOTE_W / 2 - 0.003, 0.18))
+    set_xform(barcode.GetPrim())
+    barcode.GetPrim().CreateAttribute("barcode:value", Sdf.ValueTypeNames.String,
+                                      custom=True).Set("WH-TOTE-0001")
+    for index, width in enumerate((0.008, 0.014, 0.004, 0.010, 0.006,
+                                   0.016, 0.005, 0.012, 0.007, 0.011)):
+        x = -0.135 + sum((0.008, 0.014, 0.004, 0.010, 0.006,
+                          0.016, 0.005, 0.012, 0.007, 0.011)[:index])
+        bar = define_box_mesh(stage, f"/tote/barcode/bar_{index:02d}",
+                              width, 0.008, 0.12,
+                              center=(x + width / 2, -TOTE_W / 2 - 0.010, 0.18))
+        set_xform(bar.GetPrim())
     _collision_hull(stage, "/tote/Collisions/hull",
                     TOTE_L, TOTE_W, TOTE_H, (0, 0, TOTE_H / 2))
     stage.GetRootLayer().Save()
