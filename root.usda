@@ -4,7 +4,7 @@
              Composition only -- this layer defines no prims.
              Bay extent 60 x 24 m, clear height 10.5 m. Z-up, meters, kilograms.
              Time range covers rover_01's mission: 3 named paths, 261.6 m,
-             2238.8 s @ 60 fps, barcode-scanning patrol only.
+             3758.8 s @ 60 fps, barcode-scanning patrol only.
              Authored as kinematic time samples in scenario/timeline.usda."""
 
     defaultPrim = "World"
@@ -13,7 +13,7 @@
     upAxis = "Z"
     timeCodesPerSecond = 60
     startTimeCode = 0
-    endTimeCode = 134331
+    endTimeCode = 225530
 
     subLayers = [
         @./safety/overrides.usda@,                  # STRONGEST -- corrections win over everything

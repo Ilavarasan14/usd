@@ -27,19 +27,19 @@ PICK_X, PICK_Y = PICK_STATION
 DROP_X, DROP_Y = DROP_STATION
 
 # Tote-scanning pace: crawl between stops so the barcode reader can capture.
-SPEED_NORMAL = 0.25            # m/s
-SPEED_CROSS = 0.12             # m/s inside |x| <= 2.25 (safety/constraints)
-ACCEL = 0.20                   # m/s^2
-TURN_RATE = 25.0               # deg/s
-TURN_ACCEL = 25.0              # deg/s^2
+SPEED_NORMAL = 0.15            # m/s — slow crawl
+SPEED_CROSS = 0.08             # m/s inside |x| <= 2.25 (safety/constraints)
+ACCEL = 0.10                   # m/s^2
+TURN_RATE = 15.0               # deg/s — slow deliberate turns
+TURN_ACCEL = 15.0              # deg/s^2
 CROSS_HALF_WIDTH = 2.25
 FPS = 60.0
 DT_STRAIGHT, DT_TURN = 1.0, 0.4
 
 SCAN_SPACING = 4.0            # stop every 4 m to scan tote barcodes
-SCAN_DWELL = 3.0              # seconds facing each rack wall (barcode read time)
+SCAN_DWELL = 8.0              # seconds facing each rack wall (long barcode read)
 SENSE_RANGE = 10.0            # lidar look-ahead distance (metres)
-SENSE_PAUSE = 1.0             # seconds the rover pauses while sensing ahead
+SENSE_PAUSE = 2.0             # seconds the rover pauses while sensing ahead
 
 
 def _wrap180(a):
