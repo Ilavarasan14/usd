@@ -1433,7 +1433,7 @@ def Xform "World"
             }
         }
 
-        def "Task"
+        def Scope "Task"
         {
             def RectLight "aisle_0_00"
             {

@@ -37,14 +37,38 @@ TRANSFER_SECONDS = 6.0         # roller transfer dwell at a station
 FPS = 60.0
 DT_STRAIGHT, DT_TURN = 0.5, 0.2
 
-# Rover deck stop poses: alongside each station, on the aisle centreline.
+# Scan interval: every SCAN_SPACING metres the rover pauses and turns to face
+# each rack wall (90 deg left then 90 deg right) so the POV camera captures
+# barcodes on both sides of the aisle.
+SCAN_SPACING = 6.0
+SCAN_DWELL = 2.0              # seconds facing each rack wall
+
+def _aisle_sweep(aisle_y, x_start, x_end):
+    """Generate waypoints that drive an aisle with periodic barcode scans."""
+    legs = []
+    direction = 1 if x_end > x_start else -1
+    dist = abs(x_end - x_start)
+    n_stops = max(1, int(dist / SCAN_SPACING))
+    for i in range(n_stops + 1):
+        x = x_start + direction * SCAN_SPACING * i
+        x = min(x, x_end) if direction > 0 else max(x, x_end)
+        legs.append((x, aisle_y))
+        if i < n_stops:
+            legs.append("SCAN")
+    return legs
+
 PATHS = [
-    ("patrol_south",  [(X_CROSS, A2), (X_CROSS, A1), (X_EAST, A1),
-                       (X_CROSS, A1), (X_CROSS, A2)]),
-    ("patrol_centre", [(X_EAST, A2), (X_CROSS, A2)]),
-    ("patrol_north",  [(X_CROSS, A3), (X_WEST, A3),
-                       (X_EAST, A3), (X_CROSS, A3)]),
-    ("pickup_run",    [(X_CROSS, A2), (X_WEST, A2), (PICK_X, A2), "PICK"]),
+    ("patrol_south",  [(X_CROSS, A2), (X_CROSS, A1)]
+                      + _aisle_sweep(A1, X_CROSS, X_EAST)
+                      + [(X_CROSS, A1), (X_CROSS, A2)]),
+    ("patrol_centre", _aisle_sweep(A2, X_CROSS, X_EAST)
+                      + _aisle_sweep(A2, X_CROSS, X_WEST)
+                      + [(X_CROSS, A2)]),
+    ("patrol_north",  [(X_CROSS, A3)]
+                      + _aisle_sweep(A3, X_CROSS, X_EAST)
+                      + _aisle_sweep(A3, X_CROSS, X_WEST)
+                      + [(X_CROSS, A3), (X_CROSS, A2)]),
+    ("pickup_run",    [(X_WEST, A2), (PICK_X, A2), "PICK"]),
     ("transport",     [(X_CROSS, A2), (X_CROSS, A1), (DROP_X, A1), "PLACE"]),
 ]
 START = (-8.0, A2)
@@ -162,6 +186,15 @@ def build_schedule():
                 sch.dwell(TRANSFER_SECONDS, "pick")
             elif leg == "PLACE":
                 sch.dwell(TRANSFER_SECONDS, "place")
+            elif leg == "SCAN":
+                # Turn 90 deg left (face south rack), dwell, turn 180 deg right
+                # (face north rack), dwell, turn back to original heading.
+                orig = sch.hdg
+                sch.turn_to(_wrap180(orig + 90.0))
+                sch.dwell(SCAN_DWELL, "scan")
+                sch.turn_to(_wrap180(orig - 90.0))
+                sch.dwell(SCAN_DWELL, "scan")
+                sch.turn_to(orig)
             else:
                 sch.drive_to(*leg)
         phases.append((name, t0, sch.t, sch.distance - d0))

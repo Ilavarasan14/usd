@@ -143,6 +143,7 @@ def author_artificial():
     UsdGeom.Xform.Define(stage, "/World")
     UsdGeom.Scope.Define(stage, "/World/Lighting")
     grp = UsdGeom.Scope.Define(stage, "/World/Lighting/HighBay")
+    UsdGeom.Scope.Define(stage, "/World/Lighting/Task")
 
     n = 0
 
