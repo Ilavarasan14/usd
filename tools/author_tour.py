@@ -235,10 +235,19 @@ def build_schedule():
         for leg in legs:
             if leg == "SCAN":
                 orig = sch.hdg
+                # Swing arm left, turn rover left, dwell
+                sch.arm_yaw = 90.0
+                sch._emit()
                 sch.turn_to(_wrap180(orig + 90.0))
                 sch.dwell(SCAN_DWELL, "scan")
+                # Swing arm right, turn rover right, dwell
+                sch.arm_yaw = -90.0
+                sch._emit()
                 sch.turn_to(_wrap180(orig - 90.0))
                 sch.dwell(SCAN_DWELL, "scan")
+                # Return arm forward
+                sch.arm_yaw = 0.0
+                sch._emit()
                 sch.turn_to(orig)
             elif isinstance(leg, tuple) and leg[0] == "SENSE_TURN":
                 sch.dwell(SENSE_PAUSE, "sense")

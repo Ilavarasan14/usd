@@ -66,7 +66,7 @@ def author_rover():
     set_xform(lm.GetPrim(), (0.35, 0.0, 0.30))
     add_semantics(lm.GetPrim(), "rover_sensor")
 
-    sm = UsdGeom.Xform.Define(stage, "/rover/Sensors/scanner_mount")
+    sm = UsdGeom.Xform.Define(stage, "/rover/scanner_arm/scanner_mount")
     set_xform(sm.GetPrim(), (0.30, 0.0, 0.45), camera_orient(15.0))
     add_semantics(sm.GetPrim(), "rover_sensor")
 

@@ -199,6 +199,19 @@ def Xform "World"
                         }
                     }
 
+                    over "imu_mount"
+                    {
+                        custom string isaac:note = "IMU sensor. Mount pose: (0, 0, 0.325) m, chassis centre. Create with isaacsim.sensors.physics in Kit."
+                    }
+
+                    over "rear_proximity"
+                    {
+                        custom string isaac:note = "Rear proximity sensor, facing -X. Detect obstacles behind during reverse manoeuvres. Range 3 m."
+                    }
+                }
+
+                def "scanner_arm"
+                {
                     def "scanner_mount"
                     {
                         def Camera "barcode_cam"
@@ -213,16 +226,6 @@ def Xform "World"
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
                         }
-                    }
-
-                    over "imu_mount"
-                    {
-                        custom string isaac:note = "IMU sensor. Mount pose: (0, 0, 0.325) m, chassis centre. Create with isaacsim.sensors.physics in Kit."
-                    }
-
-                    over "rear_proximity"
-                    {
-                        custom string isaac:note = "Rear proximity sensor, facing -X. Detect obstacles behind during reverse manoeuvres. Range 3 m."
                     }
                 }
 

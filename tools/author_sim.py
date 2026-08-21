@@ -303,8 +303,8 @@ def author_sensors():
         set_attr(rlidar, "inputs:range", "float", 10.0)
         set_attr(rlidar, "isaac:obstacleDetection", "bool", True)
 
-        stage.OverridePrim(base + "/Sensors/scanner_mount")
-        scanner = camera(base + "/Sensors/scanner_mount/barcode_cam",
+        stage.OverridePrim(base + "/scanner_arm/scanner_mount")
+        scanner = camera(base + "/scanner_arm/scanner_mount/barcode_cam",
                          CAM_FOCAL, CAM_HAPERTURE, CAM_VAPERTURE, (0.05, 2.0))
         set_xform(scanner.GetPrim())
         scanner.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
