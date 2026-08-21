@@ -26,20 +26,21 @@ X_EAST, X_WEST, X_CROSS = 23.0, -23.0, 0.0
 PICK_X, PICK_Y = PICK_STATION
 DROP_X, DROP_Y = DROP_STATION
 
-# Inspection pace: slow enough for barcode capture and stable chase footage.
-SPEED_NORMAL = 0.30            # m/s
-SPEED_CROSS = 0.15             # m/s inside |x| <= 2.25 (safety/constraints)
-ACCEL = 0.15                   # m/s^2
-TURN_RATE = 20.0               # deg/s
-TURN_ACCEL = 20.0              # deg/s^2
+# Tote-scanning pace: crawl between stops so the barcode reader can capture.
+SPEED_NORMAL = 0.20            # m/s
+SPEED_CROSS = 0.10             # m/s inside |x| <= 2.25 (safety/constraints)
+ACCEL = 0.12                   # m/s^2
+TURN_RATE = 18.0               # deg/s
+TURN_ACCEL = 18.0              # deg/s^2
 CROSS_HALF_WIDTH = 2.25
 TRANSFER_SECONDS = 6.0         # roller transfer dwell at a station
 FPS = 60.0
 DT_STRAIGHT, DT_TURN = 0.5, 0.2
 
-SCAN_SPACING = 4.0
-SCAN_DWELL = 4.0              # seconds facing each rack wall
+SCAN_SPACING = 3.0            # stop every 3 m to scan tote barcodes
+SCAN_DWELL = 5.0              # seconds facing each rack wall (barcode read time)
 SENSE_RANGE = 10.0            # lidar look-ahead distance (metres)
+SENSE_PAUSE = 1.5             # seconds the rover pauses while sensing ahead
 
 
 def _wrap180(a):
@@ -245,11 +246,21 @@ def build_schedule():
                 sch.dwell(SCAN_DWELL, "scan")
                 sch.turn_to(orig)
             elif isinstance(leg, tuple) and leg[0] == "SENSE_TURN":
-                # Rover detected obstacle ahead; turn toward open corridor
-                sch.dwell(1.0, "sense")
+                sch.dwell(SENSE_PAUSE, "sense")
                 sch.turn_to(leg[1])
             else:
-                sch.drive_to(*leg)
+                # Before every drive: pause to sense ahead for obstacles
+                nx, ny = leg
+                hdg_to_target = math.degrees(math.atan2(ny - sch.y, nx - sch.x))
+                dist_to_target = math.hypot(nx - sch.x, ny - sch.y)
+                if dist_to_target > 0.1:
+                    sch.dwell(SENSE_PAUSE, "sense")
+                    if _blocked_ahead(sch.x, sch.y, hdg_to_target,
+                                      min(SENSE_RANGE, dist_to_target)):
+                        new_hdg = _choose_turn(sch.x, sch.y, hdg_to_target)
+                        sch.turn_to(new_hdg)
+                        sch.dwell(SENSE_PAUSE, "sense")
+                sch.drive_to(nx, ny)
         phases.append((name, t0, sch.t, sch.distance - d0))
     return sch, phases
 
