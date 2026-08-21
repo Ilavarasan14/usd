@@ -120,6 +120,9 @@ def author_rover():
               quat_from_axis_angle((0, 0, 1), 180.0))
     add_semantics(rm.GetPrim(), "rover_sensor")
 
+    # Chase/follow cameras parent scope (cameras authored in simulation/sensors)
+    UsdGeom.Scope.Define(stage, "/rover/ViewCameras")
+
     stage.GetRootLayer().Save()
     _mk_interface("assets/robots/rover/rover.usda", "rover_geom.usdc", "rover",
                   ((-0.35, -0.33, 0.0), (0.35, 0.33, 0.50)),
