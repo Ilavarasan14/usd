@@ -1,7 +1,7 @@
 #usda 1.0
 (
     defaultPrim = "rover"
-    doc = "Inspection rover. 4WD skid-steer, lidar + barcode scanner. ArticulationRootAPI is on the payload root prim."
+    doc = "Kinematic inspection rover. Driven by timeline, not PhysX."
     kilogramsPerUnit = 1
     metersPerUnit = 1
     timeCodesPerSecond = 60

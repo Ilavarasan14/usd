@@ -82,8 +82,7 @@ def author_physics():
             bind(f"{base}/{w}", "rubber_wheel")
     for name, *_ in ROVERS:
         base = f"/World/Scenario/Fleet/{name}"
-        for part in ("chassis", "pan_head", "tilt_head"):
-            bind(f"{base}/{part}", "steel_rack")
+        bind(f"{base}/chassis", "steel_rack")
         for w in ("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"):
             bind(f"{base}/{w}", "rubber_wheel")
 
@@ -91,7 +90,7 @@ def author_physics():
     return dict(materials=len(mats), solver="TGS",
                 timeStepsPerSecond=TIME_STEPS_PER_SECOND,
                 gpu_dynamics=False,
-                dynamic_actors=10 + len(FLEET) * 7 + len(ROVERS) * 8)
+                dynamic_actors=10 + len(FLEET) * 7)
 
 
 # ----------------------------------------------------------------- materials
@@ -189,8 +188,7 @@ def author_materials():
             bind(f"{base}/{w}", "amr_rubber")
     for name, *_ in ROVERS:
         base = f"/World/Scenario/Fleet/{name}"
-        for part in ("chassis", "pan_head", "tilt_head"):
-            bind(f"{base}/{part}", "amr_shell")
+        bind(f"{base}/chassis", "amr_shell")
         for w in ("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"):
             bind(f"{base}/{w}", "amr_rubber")
 

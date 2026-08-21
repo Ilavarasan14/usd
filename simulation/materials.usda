@@ -2966,24 +2966,6 @@ def Xform "World"
                     )
                 }
 
-                over "pan_head" (
-                    prepend apiSchemas = ["MaterialBindingAPI"]
-                )
-                {
-                    rel material:binding = </World/Looks/amr_shell> (
-                        bindMaterialAs = "weakerThanDescendants"
-                    )
-                }
-
-                over "tilt_head" (
-                    prepend apiSchemas = ["MaterialBindingAPI"]
-                )
-                {
-                    rel material:binding = </World/Looks/amr_shell> (
-                        bindMaterialAs = "weakerThanDescendants"
-                    )
-                }
-
                 over "wheel_fl" (
                     prepend apiSchemas = ["MaterialBindingAPI"]
                 )
