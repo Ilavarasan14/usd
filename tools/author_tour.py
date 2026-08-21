@@ -42,7 +42,7 @@ PATHS = [
     ("patrol_south",  [(X_CROSS, A2), (X_CROSS, A1), (X_EAST, A1),
                        (X_CROSS, A1), (X_CROSS, A2)]),
     ("patrol_centre", [(X_EAST, A2), (X_CROSS, A2)]),
-    ("patrol_north",  [(X_CROSS, WALK_N), (X_WEST, WALK_N), (X_WEST, A3),
+    ("patrol_north",  [(X_CROSS, A3), (X_WEST, A3),
                        (X_EAST, A3), (X_WEST, A3)]),
     ("pickup_run",    [(X_WEST, A2), (PICK_X, A2), "PICK"]),
     ("transport",     [(X_CROSS, A2), (X_CROSS, A1), (DROP_X, A1), "PLACE"]),

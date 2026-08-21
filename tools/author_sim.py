@@ -171,15 +171,17 @@ def author_materials():
         bind(f"/World/Scenario/Staged/pallet_{i:02d}", "pallet_wood")
     for i in range(4):
         bind(f"/World/Scenario/Staged/tote_{i:02d}", "tote_plastic")
-        bind(f"/World/Scenario/Staged/tote_{i:02d}/barcode/backing", "barcode_white")
-        for bar in range(10):
-            bind(f"/World/Scenario/Staged/tote_{i:02d}/barcode/bar_{bar:02d}",
-                 "barcode_black")
+        tote_path = f"/World/Scenario/Staged/tote_{i:02d}/barcode"
+        for side in ("front", "back", "left", "right"):
+            bind(f"{tote_path}/{side}_backing", "barcode_white")
+            for bar in range(10):
+                bind(f"{tote_path}/{side}_bar_{bar:02d}", "barcode_black")
     bind("/World/Scenario/Staged/tote_payload", "tote_plastic")
-    bind("/World/Scenario/Staged/tote_payload/barcode/backing", "barcode_white")
-    for bar in range(10):
-        bind(f"/World/Scenario/Staged/tote_payload/barcode/bar_{bar:02d}",
-             "barcode_black")
+    tote_path = "/World/Scenario/Staged/tote_payload/barcode"
+    for side in ("front", "back", "left", "right"):
+        bind(f"{tote_path}/{side}_backing", "barcode_white")
+        for bar in range(10):
+            bind(f"{tote_path}/{side}_bar_{bar:02d}", "barcode_black")
     for name, *_ in FLEET:
         base = f"/World/Scenario/Fleet/{name}"
         bind(base + "/chassis", "amr_shell")
@@ -265,12 +267,20 @@ def author_sensors():
         # exact 6.0.1 call signature, so no lidar prim is invented here. The
         # mount transform is correct and ready; create the sensor in Kit.
         lm = stage.OverridePrim(base + "/Sensors/lidar_mount")
+        lidar = stage.DefinePrim(base + "/Sensors/lidar_mount/obstacle_lidar",
+                                 "IsaacRtxLidar")
+        set_attr(lidar, "sensor:type", "token", "raycast")
+        set_attr(lidar, "inputs:horizontalFov", "float", 275.0)
+        set_attr(lidar, "inputs:horizontalResolution", "uint", 1024)
+        set_attr(lidar, "inputs:verticalFov", "float", 30.0)
+        set_attr(lidar, "inputs:verticalResolution", "uint", 8)
+        set_attr(lidar, "inputs:range", "float", 12.0)
+        set_attr(lidar, "isaac:obstacleDetection", "bool", True)
         lm.CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
                            custom=True).Set(
-            "RTX Lidar not authored offline. Create in Kit under this prim. "
-            "Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. "
-            "Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at "
-            "0.20 m AGL.")
+            "RTX Lidar obstacle detector. Isaac Sim creates ray returns under "
+            "this prim; controller should stop and re-route on a near return. "
+            "Mount pose: (0.42, 0, 0.20) m in robot frame, +X forward.")
         im = stage.OverridePrim(base + "/Sensors/imu_mount")
         im.CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
                            custom=True).Set(
@@ -352,7 +362,7 @@ def author_sensors():
     return dict(cameras=n_cam, view_cams=len(VIEW_CAMS) + 2 * len(ROVERS),
                 amr_hfov=round(hfov, 1), amr_vfov=round(vfov, 1),
                 rover_pov_hfov=round(rhfov, 1), rover_pov_vfov=round(rvfov, 1),
-                fixed_hfov=round(ffov, 1), rtx_lidar="mount only, not authored",
+                fixed_hfov=round(ffov, 1), rtx_lidar="raycast obstacle detector",
                 imu="mount only, not authored")
 
 

@@ -32,9 +32,20 @@ def Xform "World"
                         }
                     }
 
-                    over "lidar_mount"
+                    def "lidar_mount"
                     {
-                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                        custom string isaac:note = "RTX Lidar obstacle detector. Isaac Sim creates ray returns under this prim; controller should stop and re-route on a near return. Mount pose: (0.42, 0, 0.20) m in robot frame, +X forward."
+
+                        def IsaacRtxLidar "obstacle_lidar"
+                        {
+                            float inputs:horizontalFov = 275
+                            uint inputs:horizontalResolution = 1024
+                            float inputs:range = 12
+                            float inputs:verticalFov = 30
+                            uint inputs:verticalResolution = 8
+                            bool isaac:obstacleDetection = 1
+                            token sensor:type = "raycast"
+                        }
                     }
 
                     over "imu_mount"
@@ -63,9 +74,20 @@ def Xform "World"
                         }
                     }
 
-                    over "lidar_mount"
+                    def "lidar_mount"
                     {
-                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                        custom string isaac:note = "RTX Lidar obstacle detector. Isaac Sim creates ray returns under this prim; controller should stop and re-route on a near return. Mount pose: (0.42, 0, 0.20) m in robot frame, +X forward."
+
+                        def IsaacRtxLidar "obstacle_lidar"
+                        {
+                            float inputs:horizontalFov = 275
+                            uint inputs:horizontalResolution = 1024
+                            float inputs:range = 12
+                            float inputs:verticalFov = 30
+                            uint inputs:verticalResolution = 8
+                            bool isaac:obstacleDetection = 1
+                            token sensor:type = "raycast"
+                        }
                     }
 
                     over "imu_mount"
@@ -94,9 +116,20 @@ def Xform "World"
                         }
                     }
 
-                    over "lidar_mount"
+                    def "lidar_mount"
                     {
-                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                        custom string isaac:note = "RTX Lidar obstacle detector. Isaac Sim creates ray returns under this prim; controller should stop and re-route on a near return. Mount pose: (0.42, 0, 0.20) m in robot frame, +X forward."
+
+                        def IsaacRtxLidar "obstacle_lidar"
+                        {
+                            float inputs:horizontalFov = 275
+                            uint inputs:horizontalResolution = 1024
+                            float inputs:range = 12
+                            float inputs:verticalFov = 30
+                            uint inputs:verticalResolution = 8
+                            bool isaac:obstacleDetection = 1
+                            token sensor:type = "raycast"
+                        }
                     }
 
                     over "imu_mount"
@@ -125,9 +158,20 @@ def Xform "World"
                         }
                     }
 
-                    over "lidar_mount"
+                    def "lidar_mount"
                     {
-                        custom string isaac:note = "RTX Lidar not authored offline. Create in Kit under this prim. Mount pose is final: (0.42, 0, 0.20) m in robot frame, +X forward. Modelled sensor: SICK nanoScan3, 275 deg aperture, scan plane at 0.20 m AGL."
+                        custom string isaac:note = "RTX Lidar obstacle detector. Isaac Sim creates ray returns under this prim; controller should stop and re-route on a near return. Mount pose: (0.42, 0, 0.20) m in robot frame, +X forward."
+
+                        def IsaacRtxLidar "obstacle_lidar"
+                        {
+                            float inputs:horizontalFov = 275
+                            uint inputs:horizontalResolution = 1024
+                            float inputs:range = 12
+                            float inputs:verticalFov = 30
+                            uint inputs:verticalResolution = 8
+                            bool isaac:obstacleDetection = 1
+                            token sensor:type = "raycast"
+                        }
                     }
 
                     over "imu_mount"

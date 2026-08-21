@@ -102,19 +102,31 @@ def author_tote():
     set_xform(m.GetPrim())
     add_semantics(m.GetPrim(), "tote")
 
-    barcode = define_box_mesh(stage, "/tote/barcode/backing", 0.30, 0.006, 0.16,
-                              center=(0.0, -TOTE_W / 2 - 0.003, 0.18))
-    set_xform(barcode.GetPrim())
-    barcode.GetPrim().CreateAttribute("barcode:value", Sdf.ValueTypeNames.String,
-                                      custom=True).Set("WH-TOTE-0001")
-    for index, width in enumerate((0.008, 0.014, 0.004, 0.010, 0.006,
-                                   0.016, 0.005, 0.012, 0.007, 0.011)):
-        x = -0.135 + sum((0.008, 0.014, 0.004, 0.010, 0.006,
-                          0.016, 0.005, 0.012, 0.007, 0.011)[:index])
-        bar = define_box_mesh(stage, f"/tote/barcode/bar_{index:02d}",
-                              width, 0.008, 0.12,
-                              center=(x + width / 2, -TOTE_W / 2 - 0.010, 0.18))
-        set_xform(bar.GetPrim())
+    barcode_widths = (0.008, 0.014, 0.004, 0.010, 0.006,
+                      0.016, 0.005, 0.012, 0.007, 0.011)
+    for side, (normal_x, normal_y) in {
+            "front": (0.0, -1.0), "back": (0.0, 1.0),
+            "left": (-1.0, 0.0), "right": (1.0, 0.0)}.items():
+        horizontal = abs(normal_y) > 0
+        backing_size = (0.30, 0.006, 0.16) if horizontal else (0.006, 0.30, 0.16)
+        backing_center = (0.0, normal_y * (TOTE_W / 2 + 0.003), 0.18) \
+            if horizontal else (normal_x * (TOTE_L / 2 + 0.003), 0.0, 0.18)
+        barcode = define_box_mesh(stage, f"/tote/barcode/{side}_backing",
+                                  *backing_size, center=backing_center)
+        set_xform(barcode.GetPrim())
+        barcode.GetPrim().CreateAttribute("barcode:value", Sdf.ValueTypeNames.String,
+                                          custom=True).Set("WH-TOTE-0001")
+        for index, width in enumerate(barcode_widths):
+            offset = -0.135 + sum(barcode_widths[:index])
+            if horizontal:
+                center = (offset + width / 2, normal_y * (TOTE_W / 2 + 0.010), 0.18)
+                size = (width, 0.008, 0.12)
+            else:
+                center = (normal_x * (TOTE_L / 2 + 0.010), offset + width / 2, 0.18)
+                size = (0.008, width, 0.12)
+            bar = define_box_mesh(stage, f"/tote/barcode/{side}_bar_{index:02d}",
+                                  *size, center=center)
+            set_xform(bar.GetPrim())
     _collision_hull(stage, "/tote/Collisions/hull",
                     TOTE_L, TOTE_W, TOTE_H, (0, 0, TOTE_H / 2))
     stage.GetRootLayer().Save()
