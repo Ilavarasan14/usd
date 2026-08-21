@@ -27,11 +27,11 @@ PICK_X, PICK_Y = PICK_STATION
 DROP_X, DROP_Y = DROP_STATION
 
 # Tote-scanning pace: crawl between stops so the barcode reader can capture.
-SPEED_NORMAL = 0.15            # m/s — slow crawl
-SPEED_CROSS = 0.08             # m/s inside |x| <= 2.25 (safety/constraints)
-ACCEL = 0.10                   # m/s^2
-TURN_RATE = 15.0               # deg/s — slow deliberate turns
-TURN_ACCEL = 15.0              # deg/s^2
+SPEED_NORMAL = 0.40            # m/s — slow crawl
+SPEED_CROSS = 0.20             # m/s inside |x| <= 2.25 (safety/constraints)
+ACCEL = 0.30                   # m/s^2
+TURN_RATE = 30.0               # deg/s — slow deliberate turns
+TURN_ACCEL = 30.0              # deg/s^2
 CROSS_HALF_WIDTH = 2.25
 FPS = 60.0
 DT_STRAIGHT, DT_TURN = 1.0, 0.4
