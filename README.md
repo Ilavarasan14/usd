@@ -45,15 +45,24 @@ something is actually driving the wheels.
 
 The walkthrough's second half (00:11:11-00:13:36) reads the lidar every tick
 and publishes it to ROS2 for RViz -- purely for visualization, never wired to
-the wheels. `simulation/sensors.usda` now authors the two sensors this needs
-on the rover:
+the wheels. The sensors involved, in `simulation/sensors.usda`:
 
-- `Sensors/lidar_mount/physics_lidar` -- a **legacy** physics Lidar
-  (`RangeSensorSchema`), separate from the RTX lidar the project already uses
-  for obstacle detection. `IsaacReadLidarBeams` (below) only reads this beam
-  -buffer type, not the RTX one.
+- `Sensors/lidar_mount/obstacle_lidar` -- the project's **RTX** lidar, a
+  render-pipeline sensor, so it follows the composed USD transform and rides
+  along with the rover. This is what gets published.
 - `Sensors/camera_mount/rgb` -- forward RGB camera, level (no downward tilt),
   same pattern as the AMR fleet's perception camera.
+
+**Do not add a legacy physics Lidar here**, even though the walkthrough uses
+one. A `Lidar` (`omni.isaac.range_sensor`) prim is a PhysX raycast sensor:
+its beams, and its `drawLines`/`drawPoints` visualisation, come from the pose
+**PhysX** holds for it. `rover_01` is driven by time samples in
+`scenario/timeline.usda`, not by PhysX, so the sensor never moves -- the
+beams hang in the air at the spawn point while the rover drives away. Making
+the rover root a kinematic rigid body does not bridge that gap. The
+walkthrough gets away with it only because its robot is genuinely PhysX-driven
+via a differential controller. This was tried here and reverted; see git
+history.
 
 The publish graph itself is `tools/ros_bridge_setup.py`, run the same way as
 the (now-removed) live controller used to be -- inside Isaac Sim's Script
@@ -70,9 +79,7 @@ make sure ROS2 is sourced, press Play, `ros2 topic list` should show
 `/rover_01/scan`, and RViz with Fixed Frame `rover_01_lidar_frame` plus a
 LaserScan display on that topic should show live returns as the rover moves.
 
-Node type tokens and pin names in that script are this repo's best-documented
-guess at the 6.0.1 names for the nodes the walkthrough narrates by ear
-("Isaac read lidar beams", "ROS2 publish laser scan") -- not verified against
-a live Kit session. See the script's doc string for what to do if a token's
-wrong; the walkthrough builds the same 4-node graph by hand in under two
-minutes as a fallback.
+The node type token (`ROS2RtxLidarHelper`) and its pin names are this repo's
+best-documented guess at the 6.0.1 names -- not verified against a live Kit
+session. See the script's doc string for what to do if a token turns out
+wrong; wiring it by hand in the Action Graph editor is a two-minute fallback.

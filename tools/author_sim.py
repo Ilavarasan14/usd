@@ -317,35 +317,21 @@ def author_sensors():
         set_attr(rlidar, "inputs:range", "float", 10.0)
         set_attr(rlidar, "isaac:obstacleDetection", "bool", True)
 
-        # Legacy physics Lidar (RangeSensorSchema, prim type "Lidar") -- the
-        # walkthrough's "physics lighter", distinct from the RTX lidar above.
-        # IsaacReadLidarBeams (simulation/ros_bridge.usda) reads THIS sensor's
-        # beam buffer; it cannot read the RTX one, which is a Replicator-
-        # annotator pipeline, not a beam buffer. Attribute names follow the
-        # long-stable omni.isaac.range_sensor Lidar schema -- unverified
-        # against 6.0.1 specifically, same caveat as the RTX lidar note above.
-        plidar = stage.DefinePrim(base + "/Sensors/lidar_mount/physics_lidar",
-                                  "Lidar")
-        set_attr(plidar, "minRange", "float", 0.1)
-        set_attr(plidar, "maxRange", "float", 10.0)
-        set_attr(plidar, "horizontalFov", "float", 220.0)
-        set_attr(plidar, "verticalFov", "float", 1.0)
-        set_attr(plidar, "horizontalResolution", "float", 0.4)
-        set_attr(plidar, "verticalResolution", "float", 1.0)
-        # Slowed from a real sensor's rotation rate for a legible RViz demo --
-        # the walkthrough does the same ("I'm going to slow down the lidar's
-        # rotation speed so the visualization is easier to follow").
-        set_attr(plidar, "rotationRate", "float", 2.0)
-        set_attr(plidar, "drawLines", "bool", True)
-        set_attr(plidar, "drawPoints", "bool", True)
-        set_attr(plidar, "enabled", "bool", True)
-        plidar.CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
-                               custom=True).Set(
-            "Legacy physics Lidar for ROS2 LaserScan streaming (RViz demo). "
-            "The RTX lidar above stays the project's obstacle-detection "
-            "sensor; this one exists only to feed "
-            "simulation/ros_bridge.usda's IsaacReadLidarBeams node, which "
-            "cannot consume RTX lidar output.")
+        # NO legacy physics Lidar here, deliberately.
+        #
+        # A "Lidar" (omni.isaac.range_sensor) prim is a PhysX raycast sensor:
+        # its beams -- and its drawLines/drawPoints debug visualisation --
+        # originate from the pose PhysX holds for it, not from the composed
+        # USD transform. rover_01 is driven by time samples in
+        # scenario/timeline.usda, so PhysX never moves it, and the beams hang
+        # in the air at the spawn point while the rover drives away. Making
+        # the root a kinematic rigid body did not bridge that gap either.
+        #
+        # The RTX lidar above is a RENDER-pipeline sensor, so it follows the
+        # composed USD transform exactly like the meshes do. It is the only
+        # lidar that can work on an animation-driven robot. Re-adding a
+        # physics Lidar only makes sense if the rover goes back to being
+        # PhysX-driven (see git history for the diff-drive articulation).
 
         cam_mount = stage.OverridePrim(base + "/Sensors/camera_mount")
         rgb = camera(base + "/Sensors/camera_mount/rgb",

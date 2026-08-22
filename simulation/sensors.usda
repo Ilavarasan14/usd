@@ -197,21 +197,6 @@ def Xform "World"
                             bool isaac:obstacleDetection = 1
                             token sensor:type = "raycast"
                         }
-
-                        def Lidar "physics_lidar"
-                        {
-                            bool drawLines = 1
-                            bool drawPoints = 1
-                            bool enabled = 1
-                            float horizontalFov = 220
-                            float horizontalResolution = 0.4
-                            custom string isaac:note = "Legacy physics Lidar for ROS2 LaserScan streaming (RViz demo). The RTX lidar above stays the project's obstacle-detection sensor; this one exists only to feed simulation/ros_bridge.usda's IsaacReadLidarBeams node, which cannot consume RTX lidar output."
-                            float maxRange = 10
-                            float minRange = 0.1
-                            float rotationRate = 2
-                            float verticalFov = 1
-                            float verticalResolution = 1
-                        }
                     }
 
                     def "camera_mount"
