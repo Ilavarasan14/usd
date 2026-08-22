@@ -54,6 +54,31 @@ _WALL_X_MIN, _WALL_X_MAX = -BAY_X / 2 + 0.5, BAY_X / 2 - 0.5  # inside walls
 _RACK_SEGS = RACK_SEG_X      # [(x_min, x_max), ...]
 _RACK_Y_BANDS = [(ry - 1.35, ry + 1.35) for ry in RACK_RUN_Y]
 
+# Placed obstacles in the aisles (x, y, clearance radius) -- must match the
+# forklift / crates / cart / human positions authored in author_infra.py.
+OBSTACLES = [
+    (12.0, 0.0, 1.4),     # forklift, centre aisle
+    (5.0, 0.0, 0.9),      # worker, centre aisle
+    (-14.5, -4.7, 1.2),   # stacked crates, south aisle
+    (-10.0, -5.9, 0.9),   # worker, south aisle
+    (8.0, 4.9, 1.0),      # cart, north aisle
+    (15.0, 5.9, 0.9),     # worker, north aisle
+]
+STANDOFF = 1.6            # metres the rover stops short of an obstacle
+
+
+def _obstacle_on_segment(x0, y, x1):
+    """Nearest blocking obstacle between x0 and x1 along a fixed-y aisle."""
+    lo, hi = (x0, x1) if x1 >= x0 else (x1, x0)
+    best = None
+    for (ox, oy, orad) in OBSTACLES:
+        if abs(oy - y) > orad:
+            continue
+        if lo - orad <= ox <= hi + orad:
+            if best is None or abs(ox - x0) < abs(best[0] - x0):
+                best = (ox, orad)
+    return best
+
 
 def _blocked_ahead(x, y, hdg_deg, distance=SENSE_RANGE):
     """True if driving `distance` m in the current heading hits racking or wall."""
@@ -97,17 +122,29 @@ def _choose_turn(x, y, hdg_deg):
 
 
 def _reactive_aisle_sweep(aisle_y, x_start, x_end):
-    """Sweep an aisle with scan stops; at each stop sense ahead and turn if blocked."""
+    """Sweep an aisle with scan stops. If a placed obstacle blocks the lane
+    ahead, stop at a standoff, ANALYZE, then reroute back to the cross-aisle so
+    the mission continues on the next aisle."""
     legs = []
     direction = 1 if x_end > x_start else -1
     dist = abs(x_end - x_start)
     n_stops = max(1, int(dist / SCAN_SPACING))
     step = dist / n_stops
+    prev_x = x_start
     for i in range(n_stops + 1):
         x = x_start + direction * step * i
+        obs = _obstacle_on_segment(prev_x, aisle_y, x)
+        if obs is not None:
+            ox, orad = obs
+            stop_x = ox - direction * (orad + STANDOFF)
+            legs.append((stop_x, aisle_y))
+            legs.append("ANALYZE")
+            legs.append("REROUTE")
+            legs.append((X_CROSS, aisle_y))
+            return legs
         legs.append((x, aisle_y))
         legs.append("SCAN")
-        # At the last stop, sense ahead and turn toward open space
+        prev_x = x
         if i == n_stops:
             hdg = 0.0 if direction > 0 else 180.0
             if _blocked_ahead(x, aisle_y, hdg, SENSE_RANGE):
@@ -271,6 +308,11 @@ def build_schedule():
             elif isinstance(leg, tuple) and leg[0] == "SENSE_TURN":
                 sch.dwell(SENSE_PAUSE, "sense")
                 sch.turn_to(leg[1])
+            elif leg == "ANALYZE":
+                sch.dwell(SENSE_PAUSE * 2, "analyze")
+            elif leg == "REROUTE":
+                sch.dwell(SENSE_PAUSE, "reroute")
+                sch.turn_to(_wrap180(sch.hdg + 180.0))
             else:
                 # Break long legs into SCAN_SPACING chunks, sensing before each
                 nx, ny = leg
