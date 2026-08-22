@@ -108,6 +108,9 @@ VIS_MATERIALS = {
     "barcode_white":      ((0.96, 0.96, 0.92), 0.50, 0.0),
     "barcode_black":      ((0.01, 0.01, 0.01), 0.60, 0.0),
     "laser_red":          ((1.00, 0.05, 0.02), 0.20, 0.0),
+    "exit_sign_green":    ((0.10, 0.70, 0.20), 0.40, 0.0),
+    "fire_ext_red":       ((0.80, 0.10, 0.05), 0.50, 0.0),
+    "drain_grey":         ((0.35, 0.35, 0.37), 0.70, 0.3),
     "amr_shell":          ((0.18, 0.19, 0.21), 0.40, 0.2),
     "amr_rubber":         ((0.05, 0.05, 0.05), 0.85, 0.0),
     "dock_door_steel":    ((0.66, 0.67, 0.69), 0.50, 0.7),
@@ -165,6 +168,15 @@ def author_materials():
     bind(INFRA + "/chargers", "charger_housing")
     bind(INFRA + "/Bollards", "safety_yellow")
     bind(INFRA + "/FloorMarkings", "floor_paint_yellow")
+    for i in range(4):
+        bind(f"{INFRA}/Details/exit_sign_{i:02d}", "exit_sign_green")
+    for i in range(2):
+        bind(f"{INFRA}/Details/fire_ext_{i:02d}", "fire_ext_red")
+    for i in range(6):
+        bind(f"{INFRA}/Details/drain_{i:02d}", "drain_grey")
+    for i in range(len(COLUMN_X)):
+        for j in range(len(RACK_RUN_Y)):
+            bind(f"{INFRA}/Details/col_stripe_{i}_{j}", "safety_yellow")
     bind(INFRA + "/GroundInventory", "pallet_wood")
     bind(INFRA + "/RackedPallets", "pallet_wood")
     for i in range(len(STAGED_PALLET_Y)):

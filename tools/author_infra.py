@@ -136,6 +136,38 @@ def author_infrastructure():
     make_static_collider(st.GetPrim(), "none")
     stats["transfer_stations"] = 2
 
+    # ---- realistic details: exit signs, fire extinguishers, drain grates ---
+    details = UsdGeom.Scope.Define(stage, "/World/Environment/Infrastructure/Details")
+    set_xform(details.GetPrim())
+    # Exit signs on east and west walls
+    for i, (ex, ey) in enumerate([(-29.0, -5.9), (-29.0, 5.9),
+                                   (29.0, -5.9), (29.0, 5.9)]):
+        sign = define_box_mesh(stage,
+            f"/World/Environment/Infrastructure/Details/exit_sign_{i:02d}",
+            0.60, 0.02, 0.20, center=(ex, ey, 3.2))
+        set_xform(sign.GetPrim())
+    # Fire extinguisher cabinets on columns
+    for i, cx in enumerate(COLUMN_X[:2]):
+        cab = define_box_mesh(stage,
+            f"/World/Environment/Infrastructure/Details/fire_ext_{i:02d}",
+            0.20, 0.15, 0.60, center=(cx, -11.5, 1.2))
+        set_xform(cab.GetPrim())
+    # Floor drain grates along the south drainage line
+    for i in range(6):
+        gx = -20.0 + 8.0 * i
+        grate = define_box_mesh(stage,
+            f"/World/Environment/Infrastructure/Details/drain_{i:02d}",
+            0.30, 0.30, 0.005, center=(gx, -11.8, floor_z(gx, -11.8) + 0.001))
+        set_xform(grate.GetPrim())
+    # Safety striping on column bases
+    for i, cx in enumerate(COLUMN_X):
+        for j, ry in enumerate(RACK_RUN_Y):
+            stripe = define_box_mesh(stage,
+                f"/World/Environment/Infrastructure/Details/col_stripe_{i}_{j}",
+                COLUMN_W + 0.02, COLUMN_W + 0.02, 0.10,
+                center=(cx, ry, 0.55))
+            set_xform(stripe.GetPrim())
+
     # ---- racked inventory -------------------------------------------------
     rng = random.Random(SEED)
     slots = pallet_slots()

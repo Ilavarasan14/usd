@@ -347,6 +347,90 @@ def Xform "World"
             }
         }
 
+        def Material "exit_sign_green"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/exit_sign_green/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/exit_sign_green/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/exit_sign_green/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/exit_sign_green/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.1, 0.7, 0.2)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.4
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.1, 0.7, 0.2)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.4
+                token outputs:surface
+            }
+        }
+
+        def Material "fire_ext_red"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/fire_ext_red/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/fire_ext_red/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/fire_ext_red/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/fire_ext_red/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.8, 0.1, 0.05)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.5
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.8, 0.1, 0.05)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "drain_grey"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/drain_grey/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/drain_grey/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/drain_grey/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/drain_grey/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.35, 0.35, 0.37)
+                float inputs:metallic_constant = 0.3
+                float inputs:reflection_roughness_constant = 0.7
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.35, 0.35, 0.37)
+                float inputs:metallic = 0.3
+                float inputs:roughness = 0.7
+                token outputs:surface
+            }
+        }
+
         def Material "amr_shell"
         {
             token outputs:mdl:displacement.connect = </World/Looks/amr_shell/mdl_shader.outputs:out>
@@ -668,6 +752,261 @@ def Xform "World"
                 rel material:binding = </World/Looks/floor_paint_yellow> (
                     bindMaterialAs = "weakerThanDescendants"
                 )
+            }
+
+            over "Details"
+            {
+                over "exit_sign_00" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/exit_sign_green> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "exit_sign_01" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/exit_sign_green> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "exit_sign_02" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/exit_sign_green> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "exit_sign_03" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/exit_sign_green> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "fire_ext_00" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/fire_ext_red> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "fire_ext_01" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/fire_ext_red> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "drain_00" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/drain_grey> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "drain_01" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/drain_grey> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "drain_02" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/drain_grey> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "drain_03" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/drain_grey> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "drain_04" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/drain_grey> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "drain_05" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/drain_grey> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_0_0" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_0_1" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_0_2" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_0_3" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_1_0" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_1_1" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_1_2" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_1_3" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_2_0" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_2_1" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_2_2" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_2_3" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_3_0" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_3_1" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_3_2" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "col_stripe_3_3" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
             }
 
             over "GroundInventory" (
