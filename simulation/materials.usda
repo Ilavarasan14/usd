@@ -431,6 +431,146 @@ def Xform "World"
             }
         }
 
+        def Material "forklift_orange"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/forklift_orange/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/forklift_orange/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/forklift_orange/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/forklift_orange/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.9, 0.55, 0.05)
+                float inputs:metallic_constant = 0.2
+                float inputs:reflection_roughness_constant = 0.5
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.9, 0.55, 0.05)
+                float inputs:metallic = 0.2
+                float inputs:roughness = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "crate_cardboard"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/crate_cardboard/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/crate_cardboard/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/crate_cardboard/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/crate_cardboard/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.65, 0.52, 0.35)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.8
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.65, 0.52, 0.35)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.8
+                token outputs:surface
+            }
+        }
+
+        def Material "cart_metal"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/cart_metal/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/cart_metal/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/cart_metal/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/cart_metal/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.5, 0.5, 0.52)
+                float inputs:metallic_constant = 0.4
+                float inputs:reflection_roughness_constant = 0.55
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.5, 0.5, 0.52)
+                float inputs:metallic = 0.4
+                float inputs:roughness = 0.55
+                token outputs:surface
+            }
+        }
+
+        def Material "human_clothing"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/human_clothing/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/human_clothing/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/human_clothing/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/human_clothing/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.25, 0.3, 0.45)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.7
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.25, 0.3, 0.45)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.7
+                token outputs:surface
+            }
+        }
+
+        def Material "human_skin"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/human_skin/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/human_skin/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/human_skin/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/human_skin/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.7, 0.55, 0.42)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.65
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.7, 0.55, 0.42)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
         def Material "amr_shell"
         {
             token outputs:mdl:displacement.connect = </World/Looks/amr_shell/mdl_shader.outputs:out>
@@ -1127,6 +1267,84 @@ def Xform "World"
                 )
                 {
                     rel material:binding = </World/Looks/safety_yellow> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "Obstacles"
+            {
+                over "forklift" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/forklift_orange> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "crate_00" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/crate_cardboard> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "crate_01" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/crate_cardboard> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "crate_02" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/crate_cardboard> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "cart" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/cart_metal> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "Humans"
+            {
+                over "person_00" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/human_clothing> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "person_01" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/human_clothing> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "person_02" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/human_clothing> (
                         bindMaterialAs = "weakerThanDescendants"
                     )
                 }

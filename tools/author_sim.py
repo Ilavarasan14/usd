@@ -111,6 +111,11 @@ VIS_MATERIALS = {
     "exit_sign_green":    ((0.10, 0.70, 0.20), 0.40, 0.0),
     "fire_ext_red":       ((0.80, 0.10, 0.05), 0.50, 0.0),
     "drain_grey":         ((0.35, 0.35, 0.37), 0.70, 0.3),
+    "forklift_orange":    ((0.90, 0.55, 0.05), 0.50, 0.2),
+    "crate_cardboard":    ((0.65, 0.52, 0.35), 0.80, 0.0),
+    "cart_metal":         ((0.50, 0.50, 0.52), 0.55, 0.4),
+    "human_clothing":     ((0.25, 0.30, 0.45), 0.70, 0.0),
+    "human_skin":         ((0.70, 0.55, 0.42), 0.65, 0.0),
     "amr_shell":          ((0.18, 0.19, 0.21), 0.40, 0.2),
     "amr_rubber":         ((0.05, 0.05, 0.05), 0.85, 0.0),
     "pipe_red":           ((0.58, 0.08, 0.06), 0.45, 0.3),
@@ -184,6 +189,12 @@ def author_materials():
     for i in range(len(COLUMN_X)):
         for j in range(len(RACK_RUN_Y)):
             bind(f"{INFRA}/Details/col_stripe_{i}_{j}", "safety_yellow")
+    bind(INFRA + "/Obstacles/forklift", "forklift_orange")
+    for ci in range(3):
+        bind(f"{INFRA}/Obstacles/crate_{ci:02d}", "crate_cardboard")
+    bind(INFRA + "/Obstacles/cart", "cart_metal")
+    for hi in range(3):
+        bind(f"{INFRA}/Humans/person_{hi:02d}", "human_clothing")
     bind(INFRA + "/GroundInventory", "pallet_wood")
     bind(INFRA + "/RackedPallets", "pallet_wood")
     for i in range(len(STAGED_PALLET_Y)):

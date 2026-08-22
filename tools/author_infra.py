@@ -168,6 +168,57 @@ def author_infrastructure():
                 center=(cx, ry, 0.55))
             set_xform(stripe.GetPrim())
 
+    # ---- obstacles and human figures in the aisles -----------------------
+    obs = UsdGeom.Scope.Define(stage, "/World/Environment/Infrastructure/Obstacles")
+    set_xform(obs.GetPrim())
+    # Parked forklift in centre aisle
+    forklift = merge_meshes(stage,
+        "/World/Environment/Infrastructure/Obstacles/forklift", [
+        (1.8, 0.9, 0.3, (12.0, 0.0, 0.15)),
+        (0.6, 0.7, 1.2, (12.6, 0.0, 0.9)),
+        (0.15, 0.9, 1.8, (11.0, 0.0, 0.9)),
+    ])
+    set_xform(forklift.GetPrim())
+    make_static_collider(forklift.GetPrim(), "convexHull")
+    # Stacked crates blocking part of south aisle
+    for ci in range(3):
+        crate = define_box_mesh(stage,
+            f"/World/Environment/Infrastructure/Obstacles/crate_{ci:02d}",
+            0.50, 0.50, 0.50,
+            center=(-15.0 + ci * 0.55, -5.9 + 1.2, 0.25 + (ci % 2) * 0.50))
+        set_xform(crate.GetPrim())
+        make_static_collider(crate.GetPrim(), "convexHull")
+    # Cart in north aisle
+    cart = merge_meshes(stage,
+        "/World/Environment/Infrastructure/Obstacles/cart", [
+        (1.0, 0.6, 0.04, (8.0, 5.9 - 1.0, 0.80)),
+        (0.04, 0.04, 0.78, (7.55, 5.9 - 1.3, 0.40)),
+        (0.04, 0.04, 0.78, (7.55, 5.9 - 0.7, 0.40)),
+        (0.04, 0.04, 0.78, (8.45, 5.9 - 1.3, 0.40)),
+        (0.04, 0.04, 0.78, (8.45, 5.9 - 0.7, 0.40)),
+    ])
+    set_xform(cart.GetPrim())
+    make_static_collider(cart.GetPrim(), "convexHull")
+    # Human figures (simplified box mannequins)
+    humans = UsdGeom.Scope.Define(stage, "/World/Environment/Infrastructure/Humans")
+    set_xform(humans.GetPrim())
+    human_poses = [
+        (5.0, 0.0, "worker near cross-aisle"),
+        (-10.0, -5.9, "worker in south aisle"),
+        (15.0, 5.9, "worker in north aisle"),
+    ]
+    for hi, (hx, hy, _) in enumerate(human_poses):
+        hz = floor_z(hx, hy)
+        human = merge_meshes(stage,
+            f"/World/Environment/Infrastructure/Humans/person_{hi:02d}", [
+            (0.35, 0.25, 0.90, (hx, hy, hz + 0.45)),
+            (0.20, 0.20, 0.20, (hx, hy, hz + 1.00)),
+            (0.15, 0.15, 0.45, (hx - 0.15, hy, hz + 0.70)),
+            (0.15, 0.15, 0.45, (hx + 0.15, hy, hz + 0.70)),
+        ])
+        set_xform(human.GetPrim())
+        make_static_collider(human.GetPrim(), "convexHull")
+
     # ---- building services, overhead --------------------------------------
     # Everything here lives in the 1.7 m of airspace between the rack top
     # (8.8 m) and the roof deck (10.5 m), threading past the light plane at
