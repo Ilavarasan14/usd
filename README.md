@@ -40,3 +40,39 @@ for physics-off scrubbing. Once the articulation is being commanded (by the
 wizard's graph, or anything else), PhysX owns `rover_01`'s transform during
 Play and that layer goes inert by design -- same as it always would once
 something is actually driving the wheels.
+
+## rover_01: ROS2 LaserScan streaming (perception, not control)
+
+The walkthrough's second half (00:11:11-00:13:36) reads the lidar every tick
+and publishes it to ROS2 for RViz -- purely for visualization, never wired to
+the wheels. `simulation/sensors.usda` now authors the two sensors this needs
+on the rover:
+
+- `Sensors/lidar_mount/physics_lidar` -- a **legacy** physics Lidar
+  (`RangeSensorSchema`), separate from the RTX lidar the project already uses
+  for obstacle detection. `IsaacReadLidarBeams` (below) only reads this beam
+  -buffer type, not the RTX one.
+- `Sensors/camera_mount/rgb` -- forward RGB camera, level (no downward tilt),
+  same pattern as the AMR fleet's perception camera.
+
+The publish graph itself is `tools/ros_bridge_setup.py`, run the same way as
+the (now-removed) live controller used to be -- inside Isaac Sim's Script
+Editor, since it's built with `omni.graph.core.Controller.edit()` rather than
+hand-authored USD (a wrong pin name there raises a traceback instead of
+silently producing a dead graph):
+
+    import sys; sys.path.append("<repo>/tools")
+    import ros_bridge_setup
+    ros_bridge_setup.build()
+
+Then, matching the walkthrough's own test: enable the ROS2 Bridge extension,
+make sure ROS2 is sourced, press Play, `ros2 topic list` should show
+`/rover_01/scan`, and RViz with Fixed Frame `rover_01_lidar_frame` plus a
+LaserScan display on that topic should show live returns as the rover moves.
+
+Node type tokens and pin names in that script are this repo's best-documented
+guess at the 6.0.1 names for the nodes the walkthrough narrates by ear
+("Isaac read lidar beams", "ROS2 publish laser scan") -- not verified against
+a live Kit session. See the script's doc string for what to do if a token's
+wrong; the walkthrough builds the same 4-node graph by hand in under two
+minutes as a fallback.

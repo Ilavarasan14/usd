@@ -70,6 +70,13 @@ def author_rover():
     set_xform(lm.GetPrim(), (0.35, 0.0, 0.30))
     add_semantics(lm.GetPrim(), "rover_sensor")
 
+    # Forward RGB perception camera -- the walkthrough's "attach an RGB
+    # camera to the sensor mount". Level (no downward tilt), unlike the
+    # barcode scanner below which is aimed at rack faces.
+    cm = UsdGeom.Xform.Define(stage, "/rover/Sensors/camera_mount")
+    set_xform(cm.GetPrim(), (0.35, 0.0, 0.40), camera_orient(0.0))
+    add_semantics(cm.GetPrim(), "rover_sensor")
+
     sm = UsdGeom.Xform.Define(stage, "/rover/scanner_arm/scanner_mount")
     set_xform(sm.GetPrim(), (0.30, 0.0, 0.45), camera_orient(15.0))
     add_semantics(sm.GetPrim(), "rover_sensor")
