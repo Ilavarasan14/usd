@@ -147,7 +147,7 @@ def author_artificial():
 
     n = 0
 
-    def fixture(path, x, y, yaw, w=1.2, h=0.3, inten=1800.0):
+    def fixture(path, x, y, yaw, w=1.2, h=0.3, inten=2500.0):
         nonlocal n
         r = UsdLux.RectLight.Define(stage, path)
         r.CreateWidthAttr(w)
@@ -174,7 +174,7 @@ def author_artificial():
         for k in range(8):
             x = -21.0 + 42.0 * k / 7.0
             fixture(f"/World/Lighting/Task/aisle_{i}_{k:02d}", x, ay, 0.0,
-                    w=0.8, h=0.2, inten=700.0)
+                    w=0.8, h=0.2, inten=1500.0)
 
     # Cross-aisle, running the full bay depth.
     for k in range(6):
@@ -190,10 +190,10 @@ def author_artificial():
     # Rack-run flue lighting: narrow fixtures down the 0.30 m back-to-back gap,
     # so the rack faces are lit from above instead of only from the aisle.
     for r_i, ry in enumerate(RACK_RUN_Y):
-        for k in range(7):
-            x = -25.0 + 50.0 * k / 6.0
+        for k in range(10):
+            x = -25.0 + 50.0 * k / 9.0
             fixture(f"/World/Lighting/HighBay/flue_{r_i}_{k:02d}", x, ry, 0.0,
-                    w=0.9, h=0.15, inten=900.0)
+                    w=0.9, h=0.15, inten=1800.0)
 
     # Dock apron task lighting, aimed down at the door thresholds.
     for j, dy in enumerate([-6.75, -2.25, 2.25, 6.75]):
@@ -202,10 +202,10 @@ def author_artificial():
     # Charger bank and the two transfer stations.
     for j, cy in enumerate([-2.4, 0.0, 2.4]):
         fixture(f"/World/Lighting/HighBay/charge_{j:02d}", -28.6, cy, 90.0,
-                w=0.9, h=0.25, inten=1200.0)
+                w=0.9, h=0.25, inten=2000.0)
     for j, (sx, sy) in enumerate((PICK_STATION, DROP_STATION)):
         fixture(f"/World/Lighting/HighBay/station_{j:02d}", sx, sy, 0.0,
-                w=0.9, h=0.25, inten=1400.0)
+                w=0.9, h=0.25, inten=2200.0)
 
     stage.GetRootLayer().Save()
     return dict(fixtures=n, mount_height_m=FIXTURE_Z, cct_k=5000,
