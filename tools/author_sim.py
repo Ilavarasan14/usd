@@ -107,6 +107,7 @@ VIS_MATERIALS = {
     "tote_plastic":       ((0.15, 0.30, 0.55), 0.35, 0.0),
     "barcode_white":      ((0.96, 0.96, 0.92), 0.50, 0.0),
     "barcode_black":      ((0.01, 0.01, 0.01), 0.60, 0.0),
+    "laser_red":          ((1.00, 0.05, 0.02), 0.20, 0.0),
     "amr_shell":          ((0.18, 0.19, 0.21), 0.40, 0.2),
     "amr_rubber":         ((0.05, 0.05, 0.05), 0.85, 0.0),
     "dock_door_steel":    ((0.66, 0.67, 0.69), 0.50, 0.7),
@@ -189,6 +190,7 @@ def author_materials():
     for name, *_ in ROVERS:
         base = f"/World/Scenario/Fleet/{name}"
         bind(f"{base}/chassis", "amr_shell")
+        bind(f"{base}/scanner_arm/laser_line", "laser_red")
         for w in ("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"):
             bind(f"{base}/{w}", "amr_rubber")
 

@@ -128,6 +128,12 @@ def author_rover():
     set_xform(arm_render.GetPrim())
     add_semantics(arm_render.GetPrim(), "rover_sensor")
 
+    # Red laser beam extending from scanner head
+    laser = define_box_mesh(stage, "/rover/scanner_arm/laser_line",
+                            0.01, 0.40, 0.005,
+                            center=(0.34, 0.0, cz + ROVER_BODY_H / 2 + 0.38))
+    set_xform(laser.GetPrim())
+
     UsdGeom.Scope.Define(stage, "/rover/Sensors")
 
     lm = UsdGeom.Xform.Define(stage, "/rover/Sensors/lidar_mount")
