@@ -74,9 +74,17 @@ def author_rover():
     set_xform(arm_render.GetPrim())
     add_semantics(arm_render.GetPrim(), "rover_sensor")
 
-    laser = define_box_mesh(stage, "/rover/scanner_arm/laser_line",
-                            0.01, 0.40, 0.005,
-                            center=(0.34, 0.0, cz + ROVER_BODY_H / 2 + 0.38))
+    # Vertical laser scanner mast on the arm -- reads top to bottom.
+    scan_mast = define_box_mesh(stage, "/rover/scanner_arm/scan_mast",
+                                0.05, 0.05, 0.95,
+                                center=(0.30, 0.0, cz + ROVER_BODY_H / 2 + 0.15))
+    set_xform(scan_mast.GetPrim())
+    add_semantics(scan_mast.GetPrim(), "rover_sensor")
+
+    # Vertical red laser beam projecting forward, spanning a full tote height.
+    laser = define_box_mesh(stage, "/rover/scanner_arm/laser_beam",
+                            0.30, 0.006, 0.90,
+                            center=(0.50, 0.0, cz + ROVER_BODY_H / 2 + 0.15))
     set_xform(laser.GetPrim())
 
     UsdGeom.Scope.Define(stage, "/rover/Sensors")

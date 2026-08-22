@@ -220,7 +220,8 @@ def author_materials():
     for name, *_ in ROVERS:
         base = f"/World/Scenario/Fleet/{name}"
         bind(f"{base}/chassis", "amr_shell")
-        bind(f"{base}/scanner_arm/laser_line", "laser_red")
+        bind(f"{base}/scanner_arm/laser_beam", "laser_red")
+        bind(f"{base}/scanner_arm/scan_mast", "amr_shell")
         for w in ("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"):
             bind(f"{base}/{w}", "amr_rubber")
 

@@ -3676,11 +3676,20 @@ def Xform "World"
 
                 over "scanner_arm"
                 {
-                    over "laser_line" (
+                    over "laser_beam" (
                         prepend apiSchemas = ["MaterialBindingAPI"]
                     )
                     {
                         rel material:binding = </World/Looks/laser_red> (
+                            bindMaterialAs = "weakerThanDescendants"
+                        )
+                    }
+
+                    over "scan_mast" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </World/Looks/amr_shell> (
                             bindMaterialAs = "weakerThanDescendants"
                         )
                     }
