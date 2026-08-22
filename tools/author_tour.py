@@ -38,6 +38,10 @@ DT_STRAIGHT, DT_TURN = 1.0, 0.4
 
 SCAN_SPACING = 4.0            # stop every 4 m to scan tote barcodes
 SCAN_DWELL = 8.0              # seconds facing each rack wall (long barcode read)
+# Shallow arc the scanner arm sweeps across the rack face while parked. Stays
+# well inside +/-90, so the laser is always somewhere across the rover's front
+# and never swings around to the back. See scan_dwell().
+ARM_SWEEP = 25.0              # degrees either side of straight ahead
 SENSE_RANGE = 10.0            # lidar look-ahead distance (metres)
 SENSE_PAUSE = 2.0             # seconds the rover pauses while sensing ahead
 
@@ -226,6 +230,26 @@ class Schedule:
         self.t += secs
         self._emit()
 
+    def scan_dwell(self, secs, kind="scan"):
+        """Parked in front of a rack face, sweeping the scanner arm across it.
+
+        The arm angle is BODY-RELATIVE and the body has already turned to face
+        the rack, so this stays within +/-ARM_SWEEP of straight ahead. The
+        earlier version set arm_yaw to +/-90 on top of the body's own 90 deg
+        turn; the two stacked to 180 and pointed the laser out the back of the
+        rover, away from the totes it was supposed to be reading.
+        """
+        t0 = self.t
+        self.events.append((kind, t0, t0 + secs))
+        steps = max(4, int(secs / 0.5))
+        for i in range(1, steps + 1):
+            self.t = t0 + secs * i / steps
+            self.arm_yaw = ARM_SWEEP * math.sin(2.0 * math.pi * i / steps)
+            self._emit()
+        self.arm_yaw = 0.0          # square to the body before driving on
+        self.t = t0 + secs
+        self._emit()
+
 
 def build_schedule():
     sch = Schedule()
@@ -235,19 +259,14 @@ def build_schedule():
         for leg in legs:
             if leg == "SCAN":
                 orig = sch.hdg
-                # Swing arm left, turn rover left, dwell
-                sch.arm_yaw = 90.0
-                sch._emit()
+                # Turning the BODY is what aims the rover at each rack wall.
+                # The arm only sweeps a shallow arc across that wall while
+                # parked -- it must not add another 90 deg on top of the body
+                # turn, or the laser ends up pointing out the rover's back.
                 sch.turn_to(_wrap180(orig + 90.0))
-                sch.dwell(SCAN_DWELL, "scan")
-                # Swing arm right, turn rover right, dwell
-                sch.arm_yaw = -90.0
-                sch._emit()
+                sch.scan_dwell(SCAN_DWELL)
                 sch.turn_to(_wrap180(orig - 90.0))
-                sch.dwell(SCAN_DWELL, "scan")
-                # Return arm forward
-                sch.arm_yaw = 0.0
-                sch._emit()
+                sch.scan_dwell(SCAN_DWELL)
                 sch.turn_to(orig)
             elif isinstance(leg, tuple) and leg[0] == "SENSE_TURN":
                 sch.dwell(SENSE_PAUSE, "sense")
