@@ -2,6 +2,15 @@
 
 Driven by time-sampled transforms in scenario/timeline.usda.
 No physics articulation -- pressing Play uses the scripted path.
+
+The root is a KINEMATIC rigid body, not a bare Xform with a static collider.
+Same reasoning as tote_payload in author_scenario.py: a kinematic body
+follows its authored transform while staying visible to PhysX, whereas a
+static collider is baked at its start pose the moment simulation begins.
+That distinction is what keeps physics-derived things attached to the robot
+-- notably the physics Lidar under Sensors/lidar_mount, whose beams are cast
+from the PhysX pose, not the USD one. With no body here, the rover drove off
+on its time samples while its lidar stayed behind at the spawn point.
 """
 from pxr import Usd, UsdGeom, UsdPhysics, Sdf, Gf
 from wh_common import *
@@ -20,6 +29,12 @@ def author_rover():
     rp = root.GetPrim()
     set_xform(rp)
     stage.SetDefaultPrim(rp)
+    # One kinematic body for the whole robot: descendant colliders (chassis)
+    # belong to it, and every child -- sensor mounts, scanner arm, laser --
+    # rides its PhysX pose instead of being frozen at the spawn transform.
+    rb = UsdPhysics.RigidBodyAPI.Apply(rp)
+    rb.CreateKinematicEnabledAttr().Set(True)
+    UsdPhysics.MassAPI.Apply(rp).CreateMassAttr().Set(ROVER_CHASSIS_MASS)
     add_semantics(rp, "rover")
 
     cz = ROVER_CLEARANCE + ROVER_BODY_H / 2
