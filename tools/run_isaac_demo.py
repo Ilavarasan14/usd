@@ -104,6 +104,10 @@ def _create_scan_beam(stage):
     """Create a tall thin cylinder parented to the rover — the scanning mast."""
     from pxr import Usd, UsdGeom, UsdShade, Sdf, Gf
 
+    # Author on the session layer so we never modify the USD files on disk
+    prev_target = stage.GetEditTarget()
+    stage.SetEditTarget(stage.GetSessionLayer())
+
     rover_path = "/World/Scenario/Fleet/rover_01"
     beam_path = f"{rover_path}/ScannerMast"
     beam_viz_path = f"{beam_path}/beam"
@@ -127,13 +131,22 @@ def _create_scan_beam(stage):
 
     # Start hidden
     cyl.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
+
+    stage.SetEditTarget(prev_target)
     return cyl
 
 
-def _set_beam_visible(beam_cyl, visible):
-    if beam_cyl:
-        beam_cyl.GetVisibilityAttr().Set(
-            UsdGeom.Tokens.inherited if visible else UsdGeom.Tokens.invisible)
+def _set_beam_visible(beam_cyl, visible, stage=None):
+    if not beam_cyl:
+        return
+    from pxr import UsdGeom
+    if stage:
+        prev = stage.GetEditTarget()
+        stage.SetEditTarget(stage.GetSessionLayer())
+    beam_cyl.GetVisibilityAttr().Set(
+        UsdGeom.Tokens.inherited if visible else UsdGeom.Tokens.invisible)
+    if stage:
+        stage.SetEditTarget(prev)
 
 
 # ── Barcode loading ───────────────────────────────────────────────────────
@@ -180,13 +193,22 @@ def _build_hud():
     except ImportError:
         return None
 
+    # Flag constants vary across Kit versions
+    def _flag(name, fallback=0):
+        for attr in (name, name.replace("WINDOW_FLAGS_", "")):
+            if hasattr(ui, attr):
+                return getattr(ui, attr)
+        return fallback
+
+    flags = (_flag("WINDOW_FLAGS_NO_TITLE_BAR")
+             | _flag("WINDOW_FLAGS_NO_RESIZE")
+             | _flag("WINDOW_FLAGS_NO_SCROLLBAR")
+             | _flag("WINDOW_FLAGS_NO_MOVE"))
+
     class HUD:
         def __init__(self):
             self.win = ui.Window("Barcode Scanner HUD", width=460, height=230,
-                                 flags=(ui.WINDOW_FLAGS_NO_TITLE_BAR
-                                        | ui.WINDOW_FLAGS_NO_RESIZE
-                                        | ui.WINDOW_FLAGS_NO_SCROLLBAR
-                                        | ui.WINDOW_FLAGS_NO_MOVE))
+                                 flags=flags)
             self.win.frame.set_style({
                 "Window": {"background_color": 0xCC111111,
                            "border_radius": 8}
@@ -272,12 +294,11 @@ def run_demo(stage, app_update):
     # Camera
     _set_camera(CAMERA_CUTS[0][1])
 
-    # Timeline
+    # Timeline — scrub only, don't play (avoids starting physics)
     timeline.set_start_time(0)
     timeline.set_end_time(225530 / FPS)
     timeline.set_time_codes_per_second(FPS)
-    timeline.play()
-    print("  ▶  Playback started (60x speed, 60-second demo)")
+    print("  ▶  Demo started (62x scrub, 60-second demo)")
 
     t0 = time.time()
     cam_idx = 0
@@ -313,7 +334,7 @@ def run_demo(stage, app_update):
 
                 if in_aisle:
                     if not beam_on:
-                        _set_beam_visible(beam_cyl, True)
+                        _set_beam_visible(beam_cyl, True, stage)
                         beam_on = True
 
                     found = [bc for bc in barcodes
@@ -325,7 +346,7 @@ def run_demo(stage, app_update):
                         by_level[bc["level"]] = by_level.get(bc["level"], 0) + 1
                 else:
                     if beam_on:
-                        _set_beam_visible(beam_cyl, False)
+                        _set_beam_visible(beam_cyl, False, stage)
                         beam_on = False
 
             last_scan = elapsed
@@ -339,8 +360,16 @@ def run_demo(stage, app_update):
         app_update()
 
     # Finish
-    timeline.pause()
-    _set_beam_visible(beam_cyl, False)
+    _set_beam_visible(beam_cyl, False, stage)
+
+    # Clean up session-layer beam prim
+    prev_target = stage.GetEditTarget()
+    stage.SetEditTarget(stage.GetSessionLayer())
+    beam_prim = stage.GetPrimAtPath(
+        "/World/Scenario/Fleet/rover_01/ScannerMast")
+    if beam_prim:
+        stage.RemovePrim(beam_prim.GetPath())
+    stage.SetEditTarget(prev_target)
 
     hit = len(scanned_ids)
     pct = 100.0 * hit / total_bc
