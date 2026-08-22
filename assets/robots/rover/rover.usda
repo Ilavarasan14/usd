@@ -1,7 +1,7 @@
 #usda 1.0
 (
     defaultPrim = "rover"
-    doc = "Physics diff-drive inspection rover. ArticulationRootAPI is on the payload root prim; rear wheel joints are driven."
+    doc = "Kinematic inspection rover. Driven by timeline, not PhysX."
     kilogramsPerUnit = 1
     metersPerUnit = 1
     timeCodesPerSecond = 60
