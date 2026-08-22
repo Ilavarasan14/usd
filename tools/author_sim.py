@@ -431,6 +431,29 @@ def author_sensors():
             "Full-warehouse overview -- shows the whole bay and rover movement.")
         n_cam += 1
 
+    # interior drone camera -- just under the 10.5 m roof, wide lens down.
+    # The bay is only 10.5 m tall, so a real "100 ft" cam would clip through the
+    # roof; this sits at 10.0 m and uses a wide lens to frame the whole floor.
+    UsdGeom.Scope.Define(stage, "/World/Simulation/DroneCameras")
+    down = Gf.Matrix4d(1).SetRotate(Gf.Rotation(Gf.Vec3d(1, 0, 0), 180.0))
+    dq = down.ExtractRotationQuat()
+    drone = [
+        # name,              pos,                 focal (mm on 36mm gate)
+        ("drone_center",     (0.0, 0.0, 10.0),    10.0),
+        ("drone_west",       (-15.0, 0.0, 10.0),  14.0),
+        ("drone_east",       (15.0, 0.0, 10.0),   14.0),
+    ]
+    for nm, pos, focal in drone:
+        c = camera(f"/World/Simulation/DroneCameras/{nm}",
+                   focal, VIEW_HAP, VIEW_VAP, (0.2, 20.0))
+        set_xform(c.GetPrim(), pos,
+                  Gf.Quatd(dq.GetReal(), Gf.Vec3d(*dq.GetImaginary())))
+        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                    custom=True).Set(
+            "Interior drone view, 10 m under the roof, looking straight down. "
+            "Wide lens frames the floor and rover without leaving the building.")
+        n_cam += 1
+
     # fixed ceiling cameras, one per aisle, looking straight down
     UsdGeom.Scope.Define(stage, "/World/Simulation")
     fx = UsdGeom.Scope.Define(stage, "/World/Simulation/FixedCameras")

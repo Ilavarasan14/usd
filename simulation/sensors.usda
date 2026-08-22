@@ -362,6 +362,48 @@ def Xform "World"
             }
         }
 
+        def Scope "DroneCameras"
+        {
+            def Camera "drone_center"
+            {
+                float2 clippingRange = (0.2, 20)
+                float focalLength = 10
+                float horizontalAperture = 36
+                custom string isaac:note = "Interior drone view, 10 m under the roof, looking straight down. Wide lens frames the floor and rover without leaving the building."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+                double3 xformOp:translate = (0, 0, 10)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "drone_west"
+            {
+                float2 clippingRange = (0.2, 20)
+                float focalLength = 14
+                float horizontalAperture = 36
+                custom string isaac:note = "Interior drone view, 10 m under the roof, looking straight down. Wide lens frames the floor and rover without leaving the building."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+                double3 xformOp:translate = (-15, 0, 10)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "drone_east"
+            {
+                float2 clippingRange = (0.2, 20)
+                float focalLength = 14
+                float horizontalAperture = 36
+                custom string isaac:note = "Interior drone view, 10 m under the roof, looking straight down. Wide lens frames the floor and rover without leaving the building."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (6.123233995736766e-17, 1, 0, 0)
+                double3 xformOp:translate = (15, 0, 10)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
         def Scope "FixedCameras"
         {
             def Camera "ceiling_00"
