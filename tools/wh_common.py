@@ -114,6 +114,7 @@ SEMANTIC_CLASSES = [
     "dock_door", "charger", "light_fixture",
     "amr", "amr_wheel", "amr_sensor",
     "rover", "rover_wheel", "rover_sensor",
+    "barcode",
 ]
 
 

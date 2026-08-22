@@ -21,6 +21,7 @@
         @./lighting/artificial_lights.usda@,
         @./lighting/sky.usda@,
         @./lighting/sun.usda@,
+        @./simulation/barcodes.usda@,
         @./simulation/semantics.usda@,
         @./simulation/sensors.usda@,
         @./simulation/materials.usda@,

@@ -724,6 +724,68 @@ def check_navigable(stage, assets, bbc):
     return fails
 
 
+# --------------------------------------------------- 14. barcode integrity
+def check_barcodes(stage, bbc):
+    """Verify barcode prims: unique IDs, valid attributes, and correct facing."""
+    bc_root = stage.GetPrimAtPath("/World/Simulation/Barcodes")
+    if not bc_root:
+        rec("SKIP", "barcodes", "no barcode layer composed into the stage")
+        return 0
+    fails, barcodes = 0, []
+    for prim in Usd.PrimRange(bc_root):
+        bc_id = prim.GetAttribute("barcode:id")
+        if not bc_id or not bc_id.Get():
+            continue
+        bc_type = prim.GetAttribute("barcode:type")
+        barcodes.append((prim, bc_id.Get(),
+                         bc_type.Get() if bc_type else None))
+
+    if not barcodes:
+        rec("SKIP", "barcodes", "barcode scope exists but contains no labels")
+        return 0
+
+    # Unique IDs
+    ids = [b[1] for b in barcodes]
+    dupes = set(x for x in ids if ids.count(x) > 1)
+    if dupes:
+        rec("FAIL", "barcodes",
+            f"{len(dupes)} duplicate barcode IDs: "
+            + ", ".join(sorted(dupes)[:5]))
+        fails += 1
+
+    # Type attribute present
+    missing_type = sum(1 for _, _, t in barcodes if not t)
+    if missing_type:
+        rec("FAIL", "barcodes",
+            f"{missing_type} barcodes missing barcode:type attribute")
+        fails += 1
+
+    # Check normals face outward (quad should face the aisle, not the rack)
+    bad_facing = 0
+    for prim, bc_id, bc_type in barcodes:
+        mesh = UsdGeom.Mesh(prim)
+        if not mesh:
+            continue
+        normals = mesh.GetNormalsAttr().Get()
+        if not normals:
+            continue
+        avg_nz = sum(n[2] for n in normals) / len(normals)
+        avg_ny = sum(abs(n[1]) for n in normals) / len(normals)
+        avg_nx = sum(abs(n[0]) for n in normals) / len(normals)
+        # A barcode should face primarily along X or Y, not Z
+        if avg_nz > 0.9 and avg_ny < 0.1 and avg_nx < 0.1:
+            bad_facing += 1
+    if bad_facing:
+        rec("WARN", "barcodes",
+            f"{bad_facing} barcodes face upward (+Z) instead of toward an aisle")
+
+    if fails == 0:
+        rec("PASS", "barcodes",
+            f"{len(barcodes)} barcodes: unique IDs, types present, "
+            f"normals face aisles")
+    return fails
+
+
 # ------------------------------------------------------------------------ main
 def main():
     root = os.path.join(SCENE_ROOT, "root.usda")
@@ -746,6 +808,7 @@ def main():
     check_view_cameras(stage, bbc)
     check_payload(stage, bbc)
     check_chase_speed(stage)
+    check_barcodes(stage, bbc)
 
     order = {"FAIL": 0, "WARN": 1, "SKIP": 2, "PASS": 3}
     RESULTS.sort(key=lambda r: order[r[0]])

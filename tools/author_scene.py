@@ -17,6 +17,7 @@ import wh_common
 import author_env, author_assets, author_rover, author_infra, author_scenario
 import author_tour
 import author_sim, author_lighting
+import author_barcodes
 
 STEPS = [
     ("environment/shell.usdc",            author_env.author_shell),
@@ -33,6 +34,7 @@ STEPS = [
     ("simulation/materials.usda",         author_sim.author_materials),
     ("simulation/sensors.usda",           author_sim.author_sensors),
     ("simulation/semantics.usda",         author_sim.author_semantics),
+    ("simulation/barcodes.usda",          author_barcodes.author_barcodes),
     ("lighting/sun.usda",                 author_lighting.author_sun),
     ("lighting/sky.usda",                 author_lighting.author_sky),
     ("lighting/artificial_lights.usda",   author_lighting.author_artificial),
