@@ -23,10 +23,10 @@ from wh_common import (
 from author_env import pallet_slots, rack_faces
 
 # Visible barcode dimensions
-BARCODE_W = 0.200   # 200 mm wide — visible at warehouse scale
-BARCODE_H = 0.080   # 80 mm tall
+BARCODE_W = 0.400   # 400 mm wide — clearly visible on rack faces
+BARCODE_H = 0.160   # 160 mm tall
 BAR_COUNT = 8       # number of black bars per label
-BARCODE_LIFT = 0.004  # offset from surface to prevent z-fighting
+BARCODE_LIFT = 0.006  # offset from surface to prevent z-fighting
 
 SEED = 20260822
 

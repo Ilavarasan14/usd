@@ -133,9 +133,10 @@ def main():
     # ── USE CASE ──
     hdr("WHAT THE ROBOT DOES")
     msg("📦", f"Warehouse: {BAY_X:.0f}x{BAY_Y:.0f} m, "
-             f"4 rack runs, 5 levels, 1,760 storage positions")
-    msg("🏷️ ", "Every position has a barcode label (white backing + black bars)")
+             f"4 rack runs, 5 levels (0-7.2m), 1,760 storage positions")
+    msg("🏷️ ", "Every position has a glowing barcode label (400x160mm)")
     msg("🤖", "Rover patrols each aisle at 0.8 m/s, stops every 4 m")
+    msg("📡", f"{BOLD}Telescoping mast scanner{RST} extends 8.5m → scans ALL 5 levels")
     msg("📷", "Turns ±90° to face each rack wall → sweeps barcode scanner")
     msg("⚠️ ", "Lidar detects obstacles → stops, analyzes, reroutes")
     msg("📊", "Output: full barcode inventory + safety risk scorecard")
