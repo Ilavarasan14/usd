@@ -133,6 +133,7 @@ def author_shell():
     roof = merge_meshes(stage, "/World/Environment/Shell/roof_deck", panels)
     set_xform(roof.GetPrim())
     make_static_collider(roof.GetPrim(), "none")
+    UsdGeom.Imageable(roof.GetPrim()).CreateVisibilityAttr().Set("invisible")
 
     # ---- structural columns, absorbed into the rack runs (never in an aisle)
     cols = []
