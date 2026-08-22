@@ -307,6 +307,61 @@ def Xform "World"
             }
         }
 
+        def Scope "OverviewCameras"
+        {
+            def Camera "warehouse_iso"
+            {
+                float2 clippingRange = (0.5, 200)
+                float focalLength = 20
+                float horizontalAperture = 36
+                custom string isaac:note = "Full-warehouse overview -- shows the whole bay and rover movement."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (0.7240752846941578, 0.4756396927989995, 0.27423127651530343, 0.41746744988074813)
+                double3 xformOp:translate = (38, -22, 20)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "warehouse_iso2"
+            {
+                float2 clippingRange = (0.5, 200)
+                float focalLength = 20
+                float horizontalAperture = 36
+                custom string isaac:note = "Full-warehouse overview -- shows the whole bay and rover movement."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (-0.41746744988074813, -0.27423127651530343, 0.4756396927989995, 0.7240752846941578)
+                double3 xformOp:translate = (-38, 22, 20)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "warehouse_side"
+            {
+                float2 clippingRange = (0.5, 200)
+                float focalLength = 24
+                float horizontalAperture = 36
+                custom string isaac:note = "Full-warehouse overview -- shows the whole bay and rover movement."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (0.8263329753867364, 0.5631818656424435, 0, 0)
+                double3 xformOp:translate = (0, -28, 13)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+
+            def Camera "warehouse_end"
+            {
+                float2 clippingRange = (0.5, 200)
+                float focalLength = 24
+                float horizontalAperture = 36
+                custom string isaac:note = "Full-warehouse overview -- shows the whole bay and rover movement."
+                token projection = "perspective"
+                float verticalAperture = 20.25
+                quatd xformOp:orient = (-0.5535627979807143, -0.43996389475928904, 0.43996389475928904, 0.5535627979807144)
+                double3 xformOp:translate = (-36, 0, 11)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+            }
+        }
+
         def Scope "FixedCameras"
         {
             def Camera "ceiling_00"

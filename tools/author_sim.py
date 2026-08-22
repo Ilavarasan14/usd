@@ -414,6 +414,23 @@ def author_sensors():
             "Zero boom radius, so it never clips racking regardless of heading.")
         n_cam += 1
 
+    # full-warehouse overview cameras -- see the whole bay + rover movement
+    UsdGeom.Scope.Define(stage, "/World/Simulation/OverviewCameras")
+    overview = [
+        ("warehouse_iso",  (38.0, -22.0, 20.0), (0.0, 0.0, 1.0), 20.0),
+        ("warehouse_iso2", (-38.0, 22.0, 20.0), (0.0, 0.0, 1.0), 20.0),
+        ("warehouse_side", (0.0, -28.0, 13.0), (0.0, 0.0, 2.0), 24.0),
+        ("warehouse_end",  (-36.0, 0.0, 11.0), (5.0, 0.0, 1.5), 24.0),
+    ]
+    for nm, eye, tgt, focal in overview:
+        c = camera(f"/World/Simulation/OverviewCameras/{nm}",
+                   focal, VIEW_HAP, VIEW_VAP, (0.5, 200.0))
+        set_xform(c.GetPrim(), eye, look_at_orient(eye, tgt))
+        c.GetPrim().CreateAttribute("isaac:note", Sdf.ValueTypeNames.String,
+                                    custom=True).Set(
+            "Full-warehouse overview -- shows the whole bay and rover movement.")
+        n_cam += 1
+
     # fixed ceiling cameras, one per aisle, looking straight down
     UsdGeom.Scope.Define(stage, "/World/Simulation")
     fx = UsdGeom.Scope.Define(stage, "/World/Simulation/FixedCameras")
