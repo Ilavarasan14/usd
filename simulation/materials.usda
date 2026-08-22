@@ -487,6 +487,90 @@ def Xform "World"
             }
         }
 
+        def Material "pipe_red"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/pipe_red/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/pipe_red/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/pipe_red/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/pipe_red/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.58, 0.08, 0.06)
+                float inputs:metallic_constant = 0.3
+                float inputs:reflection_roughness_constant = 0.45
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.58, 0.08, 0.06)
+                float inputs:metallic = 0.3
+                float inputs:roughness = 0.45
+                token outputs:surface
+            }
+        }
+
+        def Material "duct_galv"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/duct_galv/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/duct_galv/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/duct_galv/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/duct_galv/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.72, 0.73, 0.75)
+                float inputs:metallic_constant = 0.65
+                float inputs:reflection_roughness_constant = 0.4
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.72, 0.73, 0.75)
+                float inputs:metallic = 0.65
+                float inputs:roughness = 0.4
+                token outputs:surface
+            }
+        }
+
+        def Material "sign_face"
+        {
+            token outputs:mdl:displacement.connect = </World/Looks/sign_face/mdl_shader.outputs:out>
+            token outputs:mdl:surface.connect = </World/Looks/sign_face/mdl_shader.outputs:out>
+            token outputs:mdl:volume.connect = </World/Looks/sign_face/mdl_shader.outputs:out>
+            token outputs:surface.connect = </World/Looks/sign_face/preview_shader.outputs:surface>
+
+            def Shader "mdl_shader"
+            {
+                uniform token info:implementationSource = "sourceAsset"
+                uniform asset info:mdl:sourceAsset = @OmniPBR.mdl@
+                uniform token info:mdl:sourceAsset:subIdentifier = "OmniPBR"
+                color3f inputs:diffuse_color_constant = (0.93, 0.94, 0.96)
+                float inputs:metallic_constant = 0
+                float inputs:reflection_roughness_constant = 0.35
+                token outputs:out
+            }
+
+            def Shader "preview_shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.93, 0.94, 0.96)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.35
+                token outputs:surface
+            }
+        }
+
         def Material "dock_door_steel"
         {
             token outputs:mdl:displacement.connect = </World/Looks/dock_door_steel/mdl_shader.outputs:out>
@@ -709,6 +793,45 @@ def Xform "World"
 
         over "Infrastructure"
         {
+            over "BuildingServices"
+            {
+                over "sprinklers" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/pipe_red> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "hvac_ducts" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/duct_galv> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+
+                over "cable_trays" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </World/Looks/duct_galv> (
+                        bindMaterialAs = "weakerThanDescendants"
+                    )
+                }
+            }
+
+            over "aisle_signs" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </World/Looks/sign_face> (
+                    bindMaterialAs = "weakerThanDescendants"
+                )
+            }
+
             over "dock_doors" (
                 prepend apiSchemas = ["MaterialBindingAPI"]
             )

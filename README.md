@@ -3,6 +3,36 @@
 Warehouse bay scene for Isaac Sim, authored as USD via `tools/author_scene.py`
 (runs standalone against usd-core, no Kit required).
 
+## The bay
+
+60 x 24 m, 10.5 m clear height, Z-up, metres/kilograms. Open `root.usda`.
+
+| Layer | Contents |
+|---|---|
+| `environment/shell.usdc` | floor slab (0.5% drainage fall, +/-6 mm flatness), 4 tilt-up walls, roof deck, structural columns |
+| `environment/racking.usdc` | 4 rack runs, 5 levels, 1760 storage positions |
+| `environment/infrastructure.usdc` | dock doors + bumpers, chargers, bollards, floor markings, transfer stations, overhead building services, aisle signage, 643 instanced racked pallets + 151 ground pallets |
+| `lighting/` | 145 high-bay RectLights at 9.6 m, plus sun and sky |
+| `scenario/` | 4 AMRs + rover_01, staged pallets/totes, route graph, baked patrol |
+
+Y budget across the 24 m span is derived, not guessed: `1.8 walkway +
+4 x 2.70 rack run + 3 x 3.2 aisle + 1.8 walkway = 24.00`. The only full-width
+north-south connector is the cross-aisle at x=0; east of x=26 is the dock
+apron keep-out. `tools/author_tour.py` derives the patrol from those
+coordinates, so **changing the bay layout invalidates the patrol** -- rerun
+`author_scene.py` and check `validate_scene.py` after any layout edit.
+
+Overhead services (sprinkler mains, branch lines and 133 pendent heads at
+10.1 m; HVAC ducts and 20 diffusers at 9.9 m; wall cable trays at 8.5 m) and
+the hanging aisle signs at 4.6 m carry **no colliders**. Nothing on the floor
+is taller than the rover's 1.22 m mast, so per-prim colliders up there would
+be pure solver cost -- the same reasoning the RackedPallets instancer uses
+for levels 1-4.
+
+Validate any change with `python3 tools/validate_scene.py` (needs
+`pip install usd-core`): 14 checks covering composition, ground contact,
+AABB overlap, physics, scale, navigable clearance and the patrol route.
+
 ## rover_01: physics diff-drive rig
 
 `tools/author_rover.py` builds the same rig as the "build a robot from

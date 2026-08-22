@@ -113,6 +113,9 @@ VIS_MATERIALS = {
     "drain_grey":         ((0.35, 0.35, 0.37), 0.70, 0.3),
     "amr_shell":          ((0.18, 0.19, 0.21), 0.40, 0.2),
     "amr_rubber":         ((0.05, 0.05, 0.05), 0.85, 0.0),
+    "pipe_red":           ((0.58, 0.08, 0.06), 0.45, 0.3),
+    "duct_galv":          ((0.72, 0.73, 0.75), 0.40, 0.65),
+    "sign_face":          ((0.93, 0.94, 0.96), 0.35, 0.0),
     "dock_door_steel":    ((0.66, 0.67, 0.69), 0.50, 0.7),
     "floor_paint_yellow": ((0.85, 0.68, 0.05), 0.60, 0.0),
     "safety_yellow":      ((0.90, 0.72, 0.02), 0.55, 0.0),
@@ -163,6 +166,10 @@ def author_materials():
     bind(SHELL + "/columns", "column_grey")
     for r in range(len(RACK_RUN_Y)):
         bind(f"{ENV}/Racking/rack_run_{r:02d}", "rack_beam_orange")
+    bind(INFRA + "/BuildingServices/sprinklers", "pipe_red")
+    bind(INFRA + "/BuildingServices/hvac_ducts", "duct_galv")
+    bind(INFRA + "/BuildingServices/cable_trays", "duct_galv")
+    bind(INFRA + "/aisle_signs", "sign_face")
     bind(INFRA + "/dock_doors", "dock_door_steel")
     bind(INFRA + "/dock_bumpers", "amr_rubber")
     bind(INFRA + "/chargers", "charger_housing")

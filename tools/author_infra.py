@@ -168,6 +168,93 @@ def author_infrastructure():
                 center=(cx, ry, 0.55))
             set_xform(stripe.GetPrim())
 
+    # ---- building services, overhead --------------------------------------
+    # Everything here lives in the 1.7 m of airspace between the rack top
+    # (8.8 m) and the roof deck (10.5 m), threading past the light plane at
+    # 9.6 m. NO colliders on any of it: the tallest thing on the floor is a
+    # 1.2 m rover mast, so nothing can ever reach these -- same reasoning the
+    # RackedPallets instancer uses for levels 1-4.
+    svc = UsdGeom.Scope.Define(stage,
+                               "/World/Environment/Infrastructure/BuildingServices")
+    set_xform(svc.GetPrim())
+    X0, X1 = -28.0, 28.0
+    SPAN = X1 - X0
+
+    # Wet sprinkler system: one riser main along the cross-aisle, branch lines
+    # over every aisle and rack run, pendent heads at 3 m centres.
+    Z_MAIN, Z_BRANCH = 10.20, 10.08
+    sprink = [(0.14, 22.0, 0.14, (0.0, 0.0, Z_MAIN))]          # riser main
+    n_heads = 0
+    for ly in sorted(AISLE_Y + RACK_RUN_Y):
+        sprink.append((SPAN, 0.09, 0.09, ((X0 + X1) / 2, ly, Z_BRANCH)))
+        n = int(SPAN / 3.0)
+        for i in range(n + 1):
+            hx_ = X0 + SPAN * i / n
+            sprink.append((0.05, 0.05, 0.14, (hx_, ly, Z_BRANCH - 0.11)))
+            sprink.append((0.11, 0.11, 0.02, (hx_, ly, Z_BRANCH - 0.19)))  # deflector
+            n_heads += 1
+    sp_m = merge_meshes(stage,
+                        "/World/Environment/Infrastructure/BuildingServices/sprinklers",
+                        sprink)
+    set_xform(sp_m.GetPrim())
+
+    # HVAC: two supply ducts over the walkways, outboard of the 11.1 m light
+    # line so they never shadow an aisle, with diffusers every 6 m.
+    duct = []
+    n_diff = 0
+    for s in (-1, 1):
+        dy = s * 11.5
+        duct.append((SPAN, 0.50, 0.45, ((X0 + X1) / 2, dy, 9.90)))
+        n = int(SPAN / 6.0)
+        for i in range(n + 1):
+            dx = X0 + SPAN * i / n
+            duct.append((0.40, 0.40, 0.10, (dx, dy, 9.62)))
+            n_diff += 1
+    dm = merge_meshes(stage,
+                      "/World/Environment/Infrastructure/BuildingServices/hvac_ducts",
+                      duct)
+    set_xform(dm.GetPrim())
+
+    # Cable containment along both walls, under the ducts.
+    tray = [(SPAN, 0.28, 0.09, ((X0 + X1) / 2, s * 11.82, 8.50)) for s in (-1, 1)]
+    tm = merge_meshes(stage,
+                      "/World/Environment/Infrastructure/BuildingServices/cable_trays",
+                      tray)
+    set_xform(tm.GetPrim())
+    stats.update(sprinkler_heads=n_heads, hvac_diffusers=n_diff)
+
+    # ---- hanging aisle identification signs --------------------------------
+    # At both cross-aisle mouths of every aisle, on drop rods up to rack top.
+    # Face height 4.6 m clears the 1.2 m rover mast with room to spare.
+    sign_boxes = []
+    n_sign = 0
+    for ay in AISLE_Y:
+        for sx in (-2.90, 2.90):
+            sign_boxes.append((0.05, 1.20, 0.40, (sx, ay, 4.60)))     # face
+            for oy in (-0.50, 0.50):                                   # drop rods
+                sign_boxes.append((0.03, 0.03, RACK_H - 4.80,
+                                   (sx, ay + oy, 4.80 + (RACK_H - 4.80) / 2)))
+            n_sign += 1
+    sg = merge_meshes(stage, "/World/Environment/Infrastructure/aisle_signs",
+                      sign_boxes)
+    set_xform(sg.GetPrim())
+    stats["aisle_signs"] = n_sign
+
+    # ---- dock apron staging lanes -----------------------------------------
+    # Painted outbound lanes on the apron. The apron is the keep-out east of
+    # x=26 (safety/constraints.usda), so this is paint only -- no obstacles
+    # that could invalidate the rover's clearance margins.
+    n_lane = 0
+    for i, dy in enumerate(DOCK_DOOR_Y):
+        for s in (-1, 1):
+            floor_strip(
+                stage,
+                f"/World/Environment/Infrastructure/FloorMarkings/dock_lane_{i}_"
+                f"{'p' if s > 0 else 'm'}",
+                26.4, 29.4, dy + s * 1.5, 0.10)
+            n_lane += 1
+    stats["dock_lanes"] = n_lane
+
     # ---- racked inventory -------------------------------------------------
     rng = random.Random(SEED)
     slots = pallet_slots()
