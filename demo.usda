@@ -1,0 +1,55 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    doc = "Demo layer for the 60-second barcode-scanning rover demo. Sublayers root.usda (full warehouse) and adds the scanner mast beam and demo-specific overrides. Open this in Isaac Sim."
+    endTimeCode = 225530
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    startTimeCode = 0
+    subLayers = [
+        @./root.usda@
+    ]
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def "World"
+{
+    over "Scenario"
+    {
+        over "Fleet"
+        {
+            over "rover_01"
+            {
+                def Xform "ScannerMast"
+                {
+                    double3 xformOp:translate = (0.3, 0, 0.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+
+                    def Cylinder "beam" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        uniform token axis = "Z"
+                        float3[] extent = [(-0.02, -0.02, 0), (0.02, 0.02, 8.5)]
+                        double height = 8.5
+                        rel material:binding = </World/Looks/scan_beam_green>
+                        double radius = 0.02
+                        token visibility = "invisible"
+                        double3 xformOp:translate = (0, 0, 4.25)
+                        uniform token[] xformOpOrder = ["xformOp:translate"]
+                    }
+                }
+            }
+        }
+    }
+
+    def Scope "Demo"
+    {
+        custom float demo:duration = 60
+        custom float demo:mastHeight = 8.5
+        custom float demo:playbackSpeed = 62
+        custom float demo:scanRadius = 5
+    }
+}
+

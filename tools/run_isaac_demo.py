@@ -9,7 +9,7 @@ vertically to scan ALL 5 rack levels from ground level. Barcodes glow
 Usage — standalone:
     <isaac-sim-python>  tools/run_isaac_demo.py
 
-Usage — Script Editor (scene already open):
+Usage — Script Editor (demo.usda already open):
     import sys; sys.path.insert(0, "/Users/karthikeyan/hackathon/usd/tools")
     import run_isaac_demo
     run_isaac_demo.run_in_editor()
@@ -18,7 +18,7 @@ import math, os, sys, time
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SCENE_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-USD_PATH = os.path.join(SCENE_ROOT, "root.usda")
+USD_PATH = os.path.join(SCENE_ROOT, "demo.usda")
 
 # Camera schedule: (wall_seconds, camera_prim, label)
 CAMERA_CUTS = [
@@ -98,55 +98,24 @@ def _get_timeline():
     return omni.timeline.get_timeline_interface()
 
 
-# ── Scanner mast beam (visible green cylinder on the rover) ───────────────
+# ── Scanner mast beam (pre-authored in demo.usda) ─────────────────────────
 
-def _create_scan_beam(stage):
-    """Create a tall thin cylinder parented to the rover — the scanning mast."""
-    from pxr import Usd, UsdGeom, UsdShade, Sdf, Gf
-
-    # Author on the session layer so we never modify the USD files on disk
-    prev_target = stage.GetEditTarget()
-    stage.SetEditTarget(stage.GetSessionLayer())
-
-    rover_path = "/World/Scenario/Fleet/rover_01"
-    beam_path = f"{rover_path}/ScannerMast"
-    beam_viz_path = f"{beam_path}/beam"
-
-    xf = UsdGeom.Xform.Define(stage, beam_path)
-    xf.AddTranslateOp().Set(Gf.Vec3d(0.3, 0, 0.5))
-
-    cyl = UsdGeom.Cylinder.Define(stage, beam_viz_path)
-    cyl.CreateRadiusAttr(0.02)
-    cyl.CreateHeightAttr(MAST_HEIGHT)
-    cyl.CreateAxisAttr("Z")
-    cyl.AddTranslateOp().Set(Gf.Vec3d(0, 0, MAST_HEIGHT / 2))
-
-    # Bind scan_beam_green material
-    mat_path = "/World/Looks/scan_beam_green"
-    mat_prim = stage.GetPrimAtPath(mat_path)
-    if mat_prim:
-        mat = UsdShade.Material(mat_prim)
-        UsdShade.MaterialBindingAPI.Apply(cyl.GetPrim())
-        UsdShade.MaterialBindingAPI(cyl.GetPrim()).Bind(mat)
-
-    # Start hidden
-    cyl.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
-
-    stage.SetEditTarget(prev_target)
-    return cyl
+def _get_scan_beam(stage):
+    """Get the scanner mast beam cylinder authored in demo.usda."""
+    from pxr import UsdGeom
+    beam_prim = stage.GetPrimAtPath(
+        "/World/Scenario/Fleet/rover_01/ScannerMast/beam")
+    if beam_prim:
+        return UsdGeom.Cylinder(beam_prim)
+    return None
 
 
-def _set_beam_visible(beam_cyl, visible, stage=None):
+def _set_beam_visible(beam_cyl, visible):
     if not beam_cyl:
         return
     from pxr import UsdGeom
-    if stage:
-        prev = stage.GetEditTarget()
-        stage.SetEditTarget(stage.GetSessionLayer())
     beam_cyl.GetVisibilityAttr().Set(
         UsdGeom.Tokens.inherited if visible else UsdGeom.Tokens.invisible)
-    if stage:
-        stage.SetEditTarget(prev)
 
 
 # ── Barcode loading ───────────────────────────────────────────────────────
@@ -284,9 +253,13 @@ def run_demo(stage, app_update):
     rover = stage.GetPrimAtPath("/World/Scenario/Fleet/rover_01")
     t_attr = rover.GetAttribute("xformOp:translate") if rover else None
 
-    # Scanner mast beam
-    beam_cyl = _create_scan_beam(stage)
+    # Scanner mast beam (pre-authored in demo.usda)
+    beam_cyl = _get_scan_beam(stage)
     beam_on = False
+    if beam_cyl:
+        print(f"  📡 Scanner mast found (height {MAST_HEIGHT} m)")
+    else:
+        print("  ⚠️  Scanner mast not found — open demo.usda, not root.usda")
 
     # HUD
     hud = _build_hud()
@@ -334,7 +307,7 @@ def run_demo(stage, app_update):
 
                 if in_aisle:
                     if not beam_on:
-                        _set_beam_visible(beam_cyl, True, stage)
+                        _set_beam_visible(beam_cyl, True)
                         beam_on = True
 
                     found = [bc for bc in barcodes
@@ -346,7 +319,7 @@ def run_demo(stage, app_update):
                         by_level[bc["level"]] = by_level.get(bc["level"], 0) + 1
                 else:
                     if beam_on:
-                        _set_beam_visible(beam_cyl, False, stage)
+                        _set_beam_visible(beam_cyl, False)
                         beam_on = False
 
             last_scan = elapsed
@@ -360,16 +333,7 @@ def run_demo(stage, app_update):
         app_update()
 
     # Finish
-    _set_beam_visible(beam_cyl, False, stage)
-
-    # Clean up session-layer beam prim
-    prev_target = stage.GetEditTarget()
-    stage.SetEditTarget(stage.GetSessionLayer())
-    beam_prim = stage.GetPrimAtPath(
-        "/World/Scenario/Fleet/rover_01/ScannerMast")
-    if beam_prim:
-        stage.RemovePrim(beam_prim.GetPath())
-    stage.SetEditTarget(prev_target)
+    _set_beam_visible(beam_cyl, False)
 
     hit = len(scanned_ids)
     pct = 100.0 * hit / total_bc
@@ -415,12 +379,12 @@ def run_standalone():
 
 
 def run_in_editor():
-    """Call from Isaac Sim's Script Editor when root.usda is already open."""
+    """Call from Isaac Sim's Script Editor when demo.usda is already open."""
     import omni.usd
     import omni.kit.app
     stage = omni.usd.get_context().get_stage()
     if not stage:
-        print("ERROR: No stage open. Open root.usda first.")
+        print("ERROR: No stage open. Open demo.usda first.")
         return
     run_demo(stage, omni.kit.app.get_app().update)
 
