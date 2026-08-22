@@ -1,41 +1,43 @@
 """Author barcode label prims on rack positions, ground pallets, totes,
 and transfer stations.
 
-Each barcode is a small planar quad (40x20 mm) attached to the front face
-of the storage position or asset. Barcodes carry:
-  - a unique `barcode:id` string (e.g. "BC-R02-B03-L01-P1")
+Each barcode is a visible planar label (200x80 mm white backing + black bars)
+attached to the front face of the storage position or asset. Barcodes carry:
+  - a unique `barcode:id` string (e.g. "BC-R02-L01-0042")
   - a `barcode:type` token ("rack_position" | "pallet" | "tote" | "station")
-  - SDG semantic label "barcode" for perception training
 
 The barcode prims are authored as a separate USD layer so they compose
-non-destructively over the existing scene.
+non-destructively over the existing scene.  Material bindings reference
+/World/Looks/barcode_white and barcode_black from simulation/materials.usda.
 """
 import os, random
-from pxr import Usd, UsdGeom, Sdf, Gf
+from pxr import Usd, UsdGeom, UsdShade, Sdf, Gf
 from wh_common import (
     SCENE_ROOT, new_layer, set_xform, floor_z,
     RACK_RUN_Y, RACK_SEG_X, RACK_END_CLEAR, UPRIGHT_W,
     BAY_PITCH, N_BAYS_PER_SEG, N_LEVELS, BEAM_LEVEL_Z,
     PALLET_GAP, PALLET_W, PALLET_H, COLUMN_X, COLUMN_CLEAR,
     FACE_OFFSET, TOTE_H, PICK_STATION, DROP_STATION,
-    SEMANTIC_CLASSES, add_semantics,
+    SEMANTIC_CLASSES, bind_visual_material,
 )
 from author_env import pallet_slots, rack_faces
 
-BARCODE_W = 0.040   # 40 mm wide
-BARCODE_H = 0.020   # 20 mm tall
-BARCODE_LIFT = 0.003  # slight offset from the surface to prevent z-fighting
+# Visible barcode dimensions
+BARCODE_W = 0.200   # 200 mm wide — visible at warehouse scale
+BARCODE_H = 0.080   # 80 mm tall
+BAR_COUNT = 8       # number of black bars per label
+BARCODE_LIFT = 0.004  # offset from surface to prevent z-fighting
 
 SEED = 20260822
 
 
-def _barcode_quad(stage, path, center, normal_axis="y", normal_sign=1):
-    """A single-face quad representing a barcode label.
-    normal_axis: which axis the quad faces ('x', 'y', or 'z').
+def _barcode_quad(stage, path, center, sx, sz, normal_axis="y", normal_sign=1):
+    """A single-face quad of size sx x sz.
+    normal_axis: which world axis the quad faces ('x' or 'y').
     normal_sign: +1 or -1 for the facing direction.
     """
     cx, cy, cz = center
-    hw, hh = BARCODE_W / 2, BARCODE_H / 2
+    hw, hh = sx / 2, sz / 2
 
     if normal_axis == "y":
         off = normal_sign * BARCODE_LIFT
@@ -46,7 +48,7 @@ def _barcode_quad(stage, path, center, normal_axis="y", normal_sign=1):
             Gf.Vec3f(cx - hw, cy + off, cz + hh),
         ]
         nrm = Gf.Vec3f(0, normal_sign, 0)
-    elif normal_axis == "x":
+    else:
         off = normal_sign * BARCODE_LIFT
         pts = [
             Gf.Vec3f(cx + off, cy - hw, cz - hh),
@@ -55,15 +57,6 @@ def _barcode_quad(stage, path, center, normal_axis="y", normal_sign=1):
             Gf.Vec3f(cx + off, cy - hw, cz + hh),
         ]
         nrm = Gf.Vec3f(normal_sign, 0, 0)
-    else:
-        off = normal_sign * BARCODE_LIFT
-        pts = [
-            Gf.Vec3f(cx - hw, cy - hh, cz + off),
-            Gf.Vec3f(cx + hw, cy - hh, cz + off),
-            Gf.Vec3f(cx + hw, cy + hh, cz + off),
-            Gf.Vec3f(cx - hw, cy + hh, cz + off),
-        ]
-        nrm = Gf.Vec3f(0, 0, normal_sign)
 
     mesh = UsdGeom.Mesh.Define(stage, path)
     mesh.CreatePointsAttr(pts)
@@ -77,32 +70,70 @@ def _barcode_quad(stage, path, center, normal_axis="y", normal_sign=1):
     return mesh
 
 
-def _set_barcode_attrs(prim, bc_id, bc_type):
-    prim.CreateAttribute("barcode:id", Sdf.ValueTypeNames.String,
-                         custom=True).Set(bc_id)
-    prim.CreateAttribute("barcode:type", Sdf.ValueTypeNames.Token,
-                         custom=True).Set(bc_type)
+def _author_barcode_label(stage, parent_path, center, normal_axis, normal_sign,
+                          bc_id, bc_type, white_mat, black_mat):
+    """Author a full barcode label: white backing + black bars + metadata."""
+    grp = UsdGeom.Xform.Define(stage, parent_path)
+    set_xform(grp.GetPrim())
+    grp.GetPrim().CreateAttribute("barcode:id", Sdf.ValueTypeNames.String,
+                                  custom=True).Set(bc_id)
+    grp.GetPrim().CreateAttribute("barcode:type", Sdf.ValueTypeNames.Token,
+                                  custom=True).Set(bc_type)
+
+    # White backing
+    backing = _barcode_quad(stage, parent_path + "/backing", center,
+                            BARCODE_W, BARCODE_H, normal_axis, normal_sign)
+    UsdShade.MaterialBindingAPI.Apply(backing.GetPrim())
+    UsdShade.MaterialBindingAPI(backing.GetPrim()).Bind(
+        white_mat, UsdShade.Tokens.weakerThanDescendants)
+
+    # Black bars across the label
+    cx, cy, cz = center
+    bar_w = BARCODE_W * 0.06   # each bar is 6% of label width
+    margin = BARCODE_W * 0.08
+    usable = BARCODE_W - 2 * margin
+    for bi in range(BAR_COUNT):
+        bx_off = -BARCODE_W / 2 + margin + usable * bi / (BAR_COUNT - 1)
+        if normal_axis == "y":
+            bar_center = (cx + bx_off, cy, cz)
+            extra_lift = normal_sign * 0.001
+            bar_center = (cx + bx_off, cy + extra_lift, cz)
+        else:
+            bar_center = (cx, cy + bx_off, cz)
+            extra_lift = normal_sign * 0.001
+            bar_center = (cx + extra_lift, cy + bx_off, cz)
+        bar = _barcode_quad(stage, f"{parent_path}/bar_{bi:02d}",
+                            bar_center, bar_w, BARCODE_H * 0.75,
+                            normal_axis, normal_sign)
+        UsdShade.MaterialBindingAPI.Apply(bar.GetPrim())
+        UsdShade.MaterialBindingAPI(bar.GetPrim()).Bind(
+            black_mat, UsdShade.Tokens.weakerThanDescendants)
+
+    return grp
 
 
 def author_barcodes():
     stage = new_layer(
         "simulation/barcodes.usda",
         "Barcode labels on rack positions, ground pallets, totes, and "
-        "transfer stations. Each barcode carries a unique barcode:id and "
-        "barcode:type for perception and inventory tracking.")
+        "transfer stations. Each label is a white backing + black bars, "
+        "200x80 mm, visible at warehouse scale. Materials bind to "
+        "/World/Looks/barcode_white and barcode_black from materials.usda.")
 
     UsdGeom.Xform.Define(stage, "/World")
-    bc_scope = UsdGeom.Scope.Define(stage, "/World/Simulation")
-    bc_root = UsdGeom.Scope.Define(stage, "/World/Simulation/Barcodes")
+    UsdGeom.Scope.Define(stage, "/World/Simulation")
+    UsdGeom.Scope.Define(stage, "/World/Simulation/Barcodes")
+
+    # Reference materials from materials.usda (already authored)
+    white_mat = UsdShade.Material.Define(stage, "/World/Looks/barcode_white")
+    black_mat = UsdShade.Material.Define(stage, "/World/Looks/barcode_black")
 
     rng = random.Random(SEED)
     stats = {"rack_barcodes": 0, "ground_barcodes": 0,
              "tote_barcodes": 0, "station_barcodes": 0}
 
     # --- Rack position barcodes ---
-    rack_bc = UsdGeom.Scope.Define(
-        stage, "/World/Simulation/Barcodes/RackPositions")
-    faces = list(rack_faces())
+    UsdGeom.Scope.Define(stage, "/World/Simulation/Barcodes/RackPositions")
     slots = pallet_slots()
 
     bc_idx = 0
@@ -115,25 +146,22 @@ def author_barcodes():
         if run_idx is None:
             continue
 
-        # Determine which side of the run this face is on
         normal_sign = 1 if fy > RACK_RUN_Y[run_idx] else -1
-
-        # Barcode sits at the beam level, facing the aisle
-        bc_z = pz + 0.10 if lvl == 0 else pz + 0.05
+        bc_z = pz + 0.12 if lvl == 0 else pz + 0.06
         bc_id = f"BC-R{run_idx:02d}-L{lvl}-{bc_idx:04d}"
-
         bc_path = (f"/World/Simulation/Barcodes/RackPositions/"
                    f"bc_rack_{bc_idx:04d}")
-        quad = _barcode_quad(stage, bc_path,
-                             (px, fy + normal_sign * 0.02, bc_z),
-                             "y", normal_sign)
-        _set_barcode_attrs(quad.GetPrim(), bc_id, "rack_position")
+
+        _author_barcode_label(
+            stage, bc_path,
+            (px, fy + normal_sign * 0.02, bc_z),
+            "y", normal_sign, bc_id, "rack_position",
+            white_mat, black_mat)
         bc_idx += 1
         stats["rack_barcodes"] += 1
 
-    # --- Ground pallet barcodes (on the pallet face toward the aisle) ---
-    ground_bc = UsdGeom.Scope.Define(
-        stage, "/World/Simulation/Barcodes/GroundPallets")
+    # --- Ground pallet barcodes ---
+    UsdGeom.Scope.Define(stage, "/World/Simulation/Barcodes/GroundPallets")
     rng2 = random.Random(SEED)
     from wh_common import RACK_OCCUPANCY
     ground_slots = [s for s in slots if s[3] == 0]
@@ -149,15 +177,15 @@ def author_barcodes():
         bc_id = f"BC-GP-{gi:04d}"
         bc_path = (f"/World/Simulation/Barcodes/GroundPallets/"
                    f"bc_ground_{gi:04d}")
-        quad = _barcode_quad(stage, bc_path,
-                             (px, fy + normal_sign * 0.45, pz + PALLET_H * 0.7),
-                             "y", normal_sign)
-        _set_barcode_attrs(quad.GetPrim(), bc_id, "pallet")
+        _author_barcode_label(
+            stage, bc_path,
+            (px, fy + normal_sign * 0.45, pz + PALLET_H * 0.7),
+            "y", normal_sign, bc_id, "pallet",
+            white_mat, black_mat)
         stats["ground_barcodes"] += 1
 
-    # --- Tote barcodes (on staged totes) ---
-    tote_bc = UsdGeom.Scope.Define(
-        stage, "/World/Simulation/Barcodes/Totes")
+    # --- Tote barcodes ---
+    UsdGeom.Scope.Define(stage, "/World/Simulation/Barcodes/Totes")
     from author_scenario import STAGED_PALLET_Y, STAGED_PALLET_X
     tote_idx = 0
     for i in (0, 3):
@@ -168,9 +196,9 @@ def author_barcodes():
             bc_path = (f"/World/Simulation/Barcodes/Totes/"
                        f"bc_tote_{tote_idx:03d}")
             bc_z = floor_z(px, py) + PALLET_H + TOTE_H * 0.5
-            quad = _barcode_quad(stage, bc_path,
-                                 (px + 0.21, py, bc_z), "x", 1)
-            _set_barcode_attrs(quad.GetPrim(), bc_id, "tote")
+            _author_barcode_label(
+                stage, bc_path, (px + 0.21, py, bc_z),
+                "x", 1, bc_id, "tote", white_mat, black_mat)
             tote_idx += 1
             stats["tote_barcodes"] += 1
 
@@ -180,21 +208,21 @@ def author_barcodes():
     bc_id = "BC-TOTE-PAYLOAD"
     bc_path = "/World/Simulation/Barcodes/Totes/bc_tote_payload"
     bc_z = floor_z(px, py) + STATION_DECK_Z + TOTE_H * 0.5
-    quad = _barcode_quad(stage, bc_path, (px + 0.21, py, bc_z), "x", 1)
-    _set_barcode_attrs(quad.GetPrim(), bc_id, "tote")
+    _author_barcode_label(
+        stage, bc_path, (px + 0.21, py, bc_z),
+        "x", 1, bc_id, "tote", white_mat, black_mat)
     stats["tote_barcodes"] += 1
 
     # --- Transfer station barcodes ---
-    stn_bc = UsdGeom.Scope.Define(
-        stage, "/World/Simulation/Barcodes/Stations")
+    UsdGeom.Scope.Define(stage, "/World/Simulation/Barcodes/Stations")
     for si, (sx, sy) in enumerate((PICK_STATION, DROP_STATION)):
         bc_id = f"BC-STN-{si:02d}"
         bc_path = (f"/World/Simulation/Barcodes/Stations/"
                    f"bc_station_{si:02d}")
         bc_z = floor_z(sx, sy) + STATION_DECK_Z - 0.05
-        quad = _barcode_quad(stage, bc_path,
-                             (sx + 0.46, sy, bc_z), "x", 1)
-        _set_barcode_attrs(quad.GetPrim(), bc_id, "station")
+        _author_barcode_label(
+            stage, bc_path, (sx + 0.46, sy, bc_z),
+            "x", 1, bc_id, "station", white_mat, black_mat)
         stats["station_barcodes"] += 1
 
     stage.GetRootLayer().Save()
