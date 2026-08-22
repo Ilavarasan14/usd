@@ -262,7 +262,7 @@ VIEW_CAMS = [
     # Keep the boom short enough to remain inside the aisle during turns.
 CHASE_EYE, CHASE_TARGET, CHASE_FOCAL = (-0.70, -0.20, 1.45), (0.15, 0.0, 0.68), 24.0
 # The clearest way to actually watch a patrol.
-CHASE_TOP_EYE, CHASE_TOP_FOCAL = (0.0, 0.0, 6.0), 35.0
+CHASE_TOP_EYE, CHASE_TOP_FOCAL = (0.0, 0.0, 9.0), 28.0
 
 
 def author_sensors():
